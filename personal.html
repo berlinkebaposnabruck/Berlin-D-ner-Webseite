@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal-Bereich — Berlin Döner Osnabrück</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --ink:#0a0a0f;
+  --panel:#15151d;
+  --panel2:#1c1c26;
+  --teal:#12817d;
+  --teal-hi:#1bb0aa;
+  --red:#e14b32;
+  --amber:#f2a93b;
+  --chalk:#f4efe2;
+  --muted:#9c9689;
+  --line: rgba(244,239,226,0.12);
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;font-family:'Inter',sans-serif;color:var(--chalk);
+  background:
+    radial-gradient(900px 600px at 15% -10%, rgba(18,129,125,0.14), transparent 60%),
+    radial-gradient(900px 600px at 100% 10%, rgba(225,75,50,0.12), transparent 55%),
+    var(--ink);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 28px;border-bottom:1px solid var(--line);
+}
+.brand{font-family:'Anton',sans-serif;font-size:1.1rem;letter-spacing:0.5px;display:flex;align-items:center;gap:10px;}
+.brand span{color:var(--red);}
+.back-link{font-size:0.8rem;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:8px 14px;border-radius:20px;transition:.2s;}
+.back-link:hover{color:var(--chalk);border-color:var(--chalk);}
+
+.wrap{max-width:900px;margin:0 auto;padding:0 24px;}
+
+/* ---------- LOGIN VIEW ---------- */
+.login-screen{
+  min-height:calc(100vh - 70px);
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+.login-card{
+  width:100%;max-width:400px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:44px 36px;
+  position:relative;
+  box-shadow:0 30px 70px rgba(0,0,0,0.5);
+}
+.login-card:before{
+  content:"🔒";
+  position:absolute;top:-26px;left:50%;transform:translateX(-50%) rotate(-4deg);
+  width:52px;height:52px;background:var(--red);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
+  box-shadow:0 8px 20px rgba(225,75,50,0.5);
+}
+.login-tag{
+  font-family:'Permanent Marker',cursive;color:var(--amber);
+  text-align:center;font-size:1rem;margin:14px 0 4px;transform:rotate(-2deg);
+}
+.login-title{
+  font-family:'Anton',sans-serif;text-transform:uppercase;text-align:center;
+  font-size:1.7rem;margin:0 0 26px;letter-spacing:0.5px;
+}
+.field-label{display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;text-align:center;}
+.pass-input{
+  width:100%;background:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:16px;color:var(--chalk);font-size:1.4rem;letter-spacing:0.4em;text-align:center;
+  font-family:inherit;
+}
+.pass-input:focus{outline:none;border-color:var(--teal-hi);}
+.submit-btn{
+  width:100%;margin-top:18px;background:var(--teal);color:var(--chalk);border:none;
+  padding:15px;border-radius:8px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;
+  cursor:pointer;font-size:0.9rem;transition:.2s;font-family:inherit;
+  box-shadow:0 6px 18px rgba(18,129,125,0.4);
+}
+.submit-btn:hover{background:var(--teal-hi);}
+.login-msg{
+  margin-top:16px;padding:12px 14px;border-radius:8px;font-size:0.85rem;text-align:center;
+  display:none;
+}
+.login-msg.show{display:block;}
+.login-msg.ok{background:rgba(18,129,125,0.15);border:1px solid rgba(18,129,125,0.4);color:#7fd8d3;}
+.login-msg.err{background:rgba(225,75,50,0.12);border:1px solid rgba(225,75,50,0.4);color:#ffb3a0;}
+.login-footer{margin-top:22px;text-align:center;font-size:0.75rem;color:var(--muted);}
+
+/* ---------- DASHBOARD VIEW ---------- */
+.dash-wrap{display:none;padding:40px 0 70px;}
+.dash-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:16px;margin-bottom:36px;}
+.dash-head h1{font-family:'Anton',sans-serif;font-size:2rem;margin:6px 0 0;}
+.dash-eyebrow{font-family:'Permanent Marker',cursive;color:var(--amber);transform:rotate(-2deg);display:inline-block;}
+.logout-btn{
+  background:var(--red);color:#100;border:none;padding:12px 22px;border-radius:8px;
+  font-weight:800;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;font-family:inherit;
+  transition:.2s;
+}
+.logout-btn:hover{filter:brightness(1.1);}
+
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px;}
+.stat-card{
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px;
+}
+.stat-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;color:var(--muted);display:block;}
+.stat-num{font-family:'Anton',sans-serif;font-size:1.8rem;color:var(--amber);display:block;margin:4px 0;}
+.stat-sub{font-size:0.72rem;color:var(--muted);}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:26px;margin-bottom:20px;}
+.panel h2{font-family:'Anton',sans-serif;font-size:1.05rem;color:var(--teal-hi);margin:0 0 20px;letter-spacing:0.5px;}
+.bar-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.bar-label{width:100px;font-size:0.85rem;flex-shrink:0;}
+.bar-track{flex:1;height:14px;background:var(--ink);border-radius:7px;overflow:hidden;}
+.bar-fill{height:100%;width:0%;transition:width .6s ease;border-radius:7px;}
+.bar-val{width:34px;text-align:right;font-family:'Anton',sans-serif;flex-shrink:0;}
+.panel-note{font-size:0.78rem;color:var(--muted);line-height:1.6;margin-top:18px;}
+
+.link-grid{display:flex;flex-wrap:wrap;gap:12px;}
+.link-btn{
+  background:var(--panel2);border:1px solid var(--line);color:var(--chalk);
+  padding:13px 18px;border-radius:8px;font-size:0.88rem;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:.2s;text-decoration:none;display:inline-block;
+}
+.link-btn:hover{border-color:var(--amber);color:var(--amber);}
+
+@media (max-width:700px){
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">BERLIN <span>DÖNER</span> · Personal</div>
+  <a class="back-link" href="berlin-doener-osnabrueck.html">← Zur Website</a>
+</div>
+
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-tag">Nur für's Team</div>
+    <h1 class="login-title">Personal-Login</h1>
+    <form id="loginForm">
+      <label class="field-label" for="passInput">Passwort</label>
+      <input class="pass-input" type="password" id="passInput" inputmode="numeric" autocomplete="current-password" placeholder="••••" maxlength="8">
+      <button class="submit-btn" type="submit">Anmelden</button>
+      <div class="login-msg" id="loginMsg"></div>
+    </form>
+    <div class="login-footer">Zugang nur für Mitarbeiter von Berlin Döner Osnabrück.</div>
+  </div>
+</div>
+
+<div class="wrap dash-wrap" id="dashWrap">
+  <div class="dash-head">
+    <div>
+      <span class="dash-eyebrow">Team-Bereich</span>
+      <h1>Willkommen zurück 👋</h1>
+    </div>
+    <button class="logout-btn" id="logoutBtn">Abmelden</button>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span class="stat-label">Seitenaufrufe</span>
+      <span class="stat-num" id="statViews">0</span>
+      <span class="stat-sub">auf diesem Gerät</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Bestell-Klicks</span>
+      <span class="stat-num" id="statOrders">0</span>
+      <span class="stat-sub">Lieferando + Wolt + Uber Eats</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Google-Bewertung</span>
+      <span class="stat-num">4,5 ★</span>
+      <span class="stat-sub">1.179 Bewertungen</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Letzter Besuch</span>
+      <span class="stat-num" id="statLast" style="font-size:1rem;">—</span>
+      <span class="stat-sub">vorheriger Aufruf</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Bestellungen nach Plattform</h2>
+    <div class="bar-row">
+      <span class="bar-label">Lieferando</span>
+      <div class="bar-track"><div class="bar-fill" id="barLieferando" style="background:#FF8C00;"></div></div>
+      <span class="bar-val" id="valLieferando">0</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Wolt</span>
+      <div class="bar-track"><div class="bar-fill" id="barWolt" style="background:#00D4FF;"></div></div>
+      <span class="bar-val" id="valWolt">0</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Uber Eats</span>
+      <div class="bar-track"><div class="bar-fill" id="barUber" style="background:#00D26A;"></div></div>
+      <span class="bar-val" id="valUber">0</span>
+    </div>
+    <p class="panel-note">Diese Zahlen zählen Klicks auf diesem Gerät seit der ersten Anmeldung — es ist keine echte Server-Analyse, da die Seite ohne eigenes Backend läuft. Für vollständige, geräteübergreifende Statistiken braucht es eine echte Analytics-Anbindung (z. B. Google Analytics) oder die Statistiken direkt bei Lieferando/Wolt/Uber Eats.</p>
+  </div>
+
+  <div class="panel">
+    <h2>Schnellzugriff</h2>
+    <div class="link-grid">
+      <a class="link-btn" href="berlin-doener-osnabrueck.html#menu">📋 Speisekarte ansehen</a>
+      <a class="link-btn" href="berlin-doener-osnabrueck.html#galerie">🖼️ Galerie ansehen</a>
+      <a class="link-btn" href="berlin-doener-osnabrueck.html#standort">📍 Standort &amp; Öffnungszeiten</a>
+      <button class="link-btn" type="button" id="resetStats">↺ Statistik zurücksetzen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PASSWORD = '0021';
+
+function getNum(key){
+  try { return parseInt(localStorage.getItem(key) || '0', 10) || 0; } catch(e){ return 0; }
+}
+function setNum(key, val){
+  try { localStorage.setItem(key, String(val)); } catch(e){}
+}
+
+const loginScreen = document.getElementById('loginScreen');
+const dashWrap = document.getElementById('dashWrap');
+const loginForm = document.getElementById('loginForm');
+const passInput = document.getElementById('passInput');
+const loginMsg = document.getElementById('loginMsg');
+const logoutBtn = document.getElementById('logoutBtn');
+const resetBtn = document.getElementById('resetStats');
+
+function renderDashboard(){
+  const views = getNum('bd_pageviews');
+  const lief = getNum('bd_click_lieferando');
+  const wolt = getNum('bd_click_wolt');
+  const uber = getNum('bd_click_uber');
+  const total = lief + wolt + uber;
+  const maxVal = Math.max(lief, wolt, uber, 1);
+
+  document.getElementById('statViews').textContent = views;
+  document.getElementById('statOrders').textContent = total;
+  let lastVisit = '—';
+  try { lastVisit = localStorage.getItem('bd_lastvisit_prev') || '—'; } catch(e){}
+  document.getElementById('statLast').textContent = lastVisit;
+
+  document.getElementById('valLieferando').textContent = lief;
+  document.getElementById('valWolt').textContent = wolt;
+  document.getElementById('valUber').textContent = uber;
+  document.getElementById('barLieferando').style.width = (lief/maxVal*100)+'%';
+  document.getElementById('barWolt').style.width = (wolt/maxVal*100)+'%';
+  document.getElementById('barUber').style.width = (uber/maxVal*100)+'%';
+}
+
+function showDashboard(){
+  loginScreen.style.display = 'none';
+  dashWrap.style.display = 'block';
+  renderDashboard();
+}
+function showLogin(){
+  dashWrap.style.display = 'none';
+  loginScreen.style.display = 'flex';
+  passInput.value = '';
+  loginMsg.classList.remove('show','ok','err');
+}
+
+let alreadyIn = false;
+try { alreadyIn = localStorage.getItem('bd_staff_logged_in') === '1'; } catch(e){}
+if (alreadyIn) showDashboard();
+
+loginForm.addEventListener('submit', (e)=>{
+  e.preventDefault();
+  loginMsg.classList.remove('show','ok','err');
+  if(passInput.value === PASSWORD){
+    try { localStorage.setItem('bd_staff_logged_in','1'); } catch(e){}
+    loginMsg.textContent = 'Willkommen zurück! Dienstplan wird geladen …';
+    loginMsg.classList.add('show','ok');
+    setTimeout(showDashboard, 400);
+  } else {
+    loginMsg.textContent = 'Falsches Passwort. Bitte bei der Schichtleitung nachfragen.';
+    loginMsg.classList.add('show','err');
+  }
+});
+
+logoutBtn.addEventListener('click', ()=>{
+  try { localStorage.setItem('bd_staff_logged_in','0'); } catch(e){}
+  showLogin();
+});
+
+resetBtn.addEventListener('click', ()=>{
+  ['bd_click_lieferando','bd_click_wolt','bd_click_uber','bd_pageviews'].forEach(k=>setNum(k,0));
+  renderDashboard();
+});
+</script>
+
+</body>
+</html>
