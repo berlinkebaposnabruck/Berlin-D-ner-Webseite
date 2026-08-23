@@ -1018,7 +1018,10 @@ function updateStatusBar(){
 document.addEventListener('DOMContentLoaded', updateStatusBar);
 document.querySelectorAll('.lang-opt').forEach(btn => btn.addEventListener('click', () => setTimeout(updateStatusBar, 0)));
 setInterval(updateStatusBar, 60000);
-updateStatusBar();
+// Deferred (not called synchronously here) because I18N is declared further down
+// in this same script — an immediate call would throw "Cannot access I18N before
+// initialization" and silently kill every script that runs after it.
+setTimeout(updateStatusBar, 0);
 
 // ---- Live announcement banner: staff can post a temporary message ----
 (function(){
