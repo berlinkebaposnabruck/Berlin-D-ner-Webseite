@@ -205,17 +205,17 @@ header.nav{
 .hero-slide{
   position:absolute;inset:0;background-size:cover;background-position:center 5%;
   opacity:0;transition:opacity 1.6s ease;
-  filter:grayscale(0.25) contrast(1.12) saturate(1.08);
+  filter:grayscale(0.05) contrast(1.05) saturate(1.15) brightness(1.08);
 }
 .hero-slide.active{opacity:1;}
 .hero-overlay{
   position:absolute;inset:0;z-index:1;
   background:
-    linear-gradient(180deg, rgba(8,8,13,0.4) 0%, rgba(8,8,13,0.58) 45%, rgba(8,8,13,0.97) 92%),
-    linear-gradient(100deg, rgba(154,59,44,0.28), rgba(18,129,125,0.22) 60%);
+    linear-gradient(180deg, rgba(8,8,13,0.18) 0%, rgba(8,8,13,0.38) 45%, rgba(8,8,13,0.94) 92%),
+    linear-gradient(100deg, rgba(154,59,44,0.16), rgba(18,129,125,0.12) 60%);
   mix-blend-mode:multiply;
 }
-.hero-overlay2{position:absolute;inset:0;z-index:1;background:rgba(8,8,13,0.18);}
+.hero-overlay2{position:absolute;inset:0;z-index:1;background:rgba(8,8,13,0.08);}
 .hero-inner{
   width:100%;padding:120px 28px 70px;max-width:1180px;margin:0 auto;
   position:relative;z-index:2;
@@ -355,7 +355,7 @@ section{padding:100px 0;position:relative;}
 .gallery{background:var(--ink-2);}
 .gal-grid{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:120px;gap:10px;}
 .gal-grid figure{margin:0;overflow:hidden;border-radius:4px;position:relative;}
-.gal-grid img{width:100%;height:100%;object-fit:cover;object-position:center 20%;transition:transform .5s ease, filter .5s ease;filter:grayscale(0.2) saturate(1.05);}
+.gal-grid img{width:100%;height:100%;object-fit:cover;object-position:center 20%;transition:opacity .35s ease, transform .5s ease, filter .5s ease;filter:grayscale(0.05) saturate(1.1);cursor:pointer;}
 .gal-grid figure:hover img{transform:scale(1.08);filter:saturate(1.2);}
 .gal-grid figure:after{
   content:attr(data-label);position:absolute;left:0;right:0;bottom:0;padding:10px 12px 8px;
@@ -369,6 +369,28 @@ section{padding:100px 0;position:relative;}
 .g3{grid-column:span 2;grid-row:span 2;}
 .g4{grid-column:span 2;grid-row:span 2;}
 .g5{grid-column:span 2;grid-row:span 2;}
+
+.lightbox{
+  position:fixed;inset:0;background:rgba(5,5,8,0.94);z-index:1000;
+  display:none;align-items:center;justify-content:center;
+}
+.lightbox.open{display:flex;}
+.lightbox img{max-width:88vw;max-height:82vh;border-radius:6px;box-shadow:0 30px 70px rgba(0,0,0,0.6);}
+.lb-close{
+  position:absolute;top:22px;right:28px;background:none;border:none;color:var(--chalk);
+  font-size:2.2rem;cursor:pointer;line-height:1;
+}
+.lb-nav{
+  position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.08);
+  border:none;color:var(--chalk);font-size:2.4rem;width:56px;height:56px;border-radius:50%;
+  cursor:pointer;transition:.2s;
+}
+.lb-nav:hover{background:rgba(255,255,255,0.18);}
+.lb-prev{left:16px;}
+.lb-next{right:16px;}
+@media (max-width:700px){
+  .lb-nav{width:44px;height:44px;font-size:1.8rem;}
+}
 
 .staff-modal{
   position:fixed;inset:0;background:rgba(5,5,8,0.85);z-index:1100;
@@ -391,11 +413,6 @@ section{padding:100px 0;position:relative;}
   .staff-modal{padding:0;}
   .staff-modal-inner{max-width:100%;height:100%;border-radius:0;}
 }
-@media (max-width:700px){
-  .gal-full-grid{grid-template-columns:repeat(auto-fill, minmax(105px, 1fr));}
-  .gal-full-grid img{height:105px;}
-  .lb-nav{width:44px;height:44px;font-size:1.8rem;}
-}
 
 /* ---------- REVIEWS ---------- */
 .reviews{background:var(--brick-deep);position:relative;overflow:hidden;}
@@ -411,6 +428,62 @@ section{padding:100px 0;position:relative;}
 
 /* ---------- STANDORT ---------- */
 .standort{background:var(--ink);}
+
+/* ---------- KONTAKT ---------- */
+.kontakt{background:var(--ink-2);border-top:1px solid var(--line);}
+.kontakt-form{max-width:600px;display:flex;flex-direction:column;gap:14px;}
+.kontakt-row{display:flex;gap:14px;flex-wrap:wrap;}
+.kontakt-row .kontakt-input{flex:1;min-width:220px;}
+.kontakt-input{
+  background:var(--panel);border:1px solid var(--line);border-radius:6px;
+  padding:14px 16px;color:var(--chalk);font-family:inherit;font-size:0.95rem;resize:vertical;
+}
+.kontakt-input:focus{outline:none;border-color:var(--teal);}
+.kontakt-msg{font-size:0.88rem;margin-top:4px;}
+.kontakt-msg.ok{color:#7fd8d3;}
+.kontakt-msg.err{color:#ffb3a0;}
+#announceBar{
+  position:fixed;top:0;left:0;right:0;z-index:150;
+  background:var(--amber);color:#1a0d00;font-weight:700;font-size:0.88rem;
+  padding:12px 20px;text-align:center;display:flex;align-items:center;justify-content:center;gap:16px;
+}
+#announceBar button{background:none;border:none;color:#1a0d00;font-size:1.3rem;cursor:pointer;line-height:1;}
+
+/* ---------- CHAT ASSISTANT (rule-based, no external AI needed) ---------- */
+.chat-fab{
+  position:fixed;bottom:22px;right:22px;z-index:900;
+  width:58px;height:58px;border-radius:50%;background:var(--teal);border:none;
+  font-size:1.6rem;cursor:pointer;box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  transition:transform .2s;
+}
+.chat-fab:hover{transform:scale(1.08);}
+.chat-widget{
+  position:fixed;bottom:22px;right:22px;z-index:901;
+  width:340px;max-width:calc(100vw - 32px);height:460px;max-height:calc(100vh - 100px);
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  display:none;flex-direction:column;overflow:hidden;
+  box-shadow:0 30px 70px rgba(0,0,0,0.6);
+}
+.chat-widget.open{display:flex;}
+.chat-head{
+  background:var(--teal-deep);color:var(--chalk);padding:14px 16px;font-weight:700;font-size:0.92rem;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.chat-head button{background:none;border:none;color:var(--chalk);font-size:1.4rem;cursor:pointer;line-height:1;}
+.chat-body{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}
+.chat-msg{max-width:82%;padding:10px 13px;border-radius:12px;font-size:0.88rem;line-height:1.45;}
+.chat-msg.bot{background:var(--ink);color:var(--chalk);align-self:flex-start;border-bottom-left-radius:2px;}
+.chat-msg.user{background:var(--teal);color:var(--chalk);align-self:flex-end;border-bottom-right-radius:2px;}
+.chat-form{display:flex;border-top:1px solid var(--line);}
+.chat-form input{
+  flex:1;background:var(--ink);border:none;padding:13px 14px;color:var(--chalk);font-family:inherit;font-size:0.88rem;
+}
+.chat-form input:focus{outline:none;}
+.chat-form button{background:var(--teal);border:none;color:var(--chalk);width:48px;font-size:1.1rem;cursor:pointer;}
+@media (max-width:480px){
+  .chat-widget{right:16px;left:16px;width:auto;bottom:16px;}
+  .chat-fab{right:16px;bottom:16px;}
+}
 .std-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
 .std-card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:34px;}
 .std-card h3{font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--teal);margin-bottom:18px;letter-spacing:0.5px;}
@@ -525,6 +598,7 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
       <a href="#galerie" data-i18n="navGallery">Galerie</a>
       <a href="#bestellen" data-i18n="navOrder">Bestellen</a>
       <a href="#standort" data-i18n="navLocation">Standort</a>
+      <a href="#kontakt" data-i18n="navContact">Kontakt</a>
       <a href="personal.html" class="staff-link" data-i18n="navStaff">Personal</a>
     </nav>
     <div class="nav-right">
@@ -561,9 +635,6 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     <div class="hero-ctas">
       <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=Kollegienwall+1a+49074+Osnabr%C3%BCck" target="_blank" rel="noopener" data-i18n="btnRoute">Route planen</a>
       <a class="btn btn-outline" href="#menu" data-i18n="navMenu">Speisekarte</a>
-      <button class="dd-btn dd-lieferando" type="button" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin">Lieferando</button>
-      <button class="dd-btn dd-wolt" type="button" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D">Wolt</button>
-      <button class="dd-btn dd-uber" type="button" data-url="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ">Uber Eats</button>
     </div>
     <div class="hero-stats">
       <div class="hero-stat"><b>4,5 ★</b><span data-i18n="statReviews">1.179 Google-Bewertungen</span></div>
@@ -689,21 +760,42 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
         <svg viewBox="0 0 320 14" preserveAspectRatio="none"><path d="M2,7 C100,1 230,13 318,5"/></svg>
       </h2>
     </div>
-    <div class="gal-grid">
-      <figure class="g1" data-label="Frisch geschnitten"><img src="images/gal_slicing.jpg" alt="Frisches Dönerfleisch wird vom Spieß geschnitten"></figure>
-      <figure class="g2" data-label="Dürüm, vollgepackt"><img src="images/gal_durum.jpg" alt="Dürüm mit Fleisch, Salat und Feta"></figure>
-      <figure class="g3" data-label="Zum Mitnehmen"><img src="images/gal_wrap.jpg" alt="Döner im Fladenbrot mit frischem Salat"></figure>
-      <figure class="g4" data-label="Knusprig"><img src="images/gal_fries.jpg" alt="Frisch frittierte Pommes"></figure>
-      <figure class="g5" data-label="An der Theke"><img src="images/gal_counter.jpg" alt="Döner wird an der Theke belegt"></figure>
+    <p style="color:var(--muted);margin-top:14px;font-size:0.85rem;">Die Bilder wechseln von selbst — zum Vergrößern antippen.</p>
+    <div class="gal-grid" id="galGrid">
+      <figure class="g1" id="gTile0"><img src="images/gal_slicing.jpg" alt="Impressionen aus dem Laden"></figure>
+      <figure class="g2" id="gTile1"><img src="images/gal_durum.jpg" alt="Impressionen aus dem Laden"></figure>
+      <figure class="g3" id="gTile2"><img src="images/gal_wrap.jpg" alt="Impressionen aus dem Laden"></figure>
+      <figure class="g4" id="gTile3"><img src="images/gal_fries.jpg" alt="Impressionen aus dem Laden"></figure>
+      <figure class="g5" id="gTile4"><img src="images/gal_counter.jpg" alt="Impressionen aus dem Laden"></figure>
     </div>
   </div>
 </section>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose" type="button" aria-label="Schließen">&times;</button>
+  <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Vorheriges Bild">&#8249;</button>
+  <img id="lbImg" src="" alt="">
+  <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Nächstes Bild">&#8250;</button>
+</div>
 
 <div class="staff-modal" id="staffModal">
   <div class="staff-modal-inner">
     <button class="staff-modal-close" id="staffModalClose" type="button" aria-label="Schließen">&times;</button>
     <iframe id="staffModalFrame" src="" title="Personal-Bereich"></iframe>
   </div>
+</div>
+
+<button class="chat-fab" id="chatFab" type="button" aria-label="Assistent öffnen">🤖</button>
+<div class="chat-widget" id="chatWidget">
+  <div class="chat-head">
+    <span>🤖 Berlin Döner Assistent</span>
+    <button type="button" id="chatClose" aria-label="Schließen">&times;</button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <form class="chat-form" id="chatForm">
+    <input type="text" id="chatInput" placeholder="Frag mich etwas…" autocomplete="off">
+    <button type="submit">➤</button>
+  </form>
 </div>
 
 <section class="reviews">
@@ -733,11 +825,30 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     <div class="std-card">
       <span class="pin-graphic"></span>
       <h3>Kollegienwall 1a, 49074 Osnabrück</h3>
-      <div class="std-row"><span>Mo – Do</span><span>11:00 – 23:00</span></div>
-      <div class="std-row"><span>Fr – Sa</span><span>11:00 – 05:00</span></div>
-      <div class="std-row"><span>So</span><span>11:00 – 23:00</span></div>
+      <div class="std-row"><span>Mo – Do</span><span id="hoursMoDo">11:00 – 23:00</span></div>
+      <div class="std-row"><span>Fr – Sa</span><span id="hoursFrSa">11:00 – 05:00</span></div>
+      <div class="std-row"><span>So</span><span id="hoursSo">11:00 – 23:00</span></div>
       <div class="std-row" style="border-bottom:none;"><span>Instagram</span><span>@berlindoener_os</span></div>
     </div>
+  </div>
+</section>
+
+<section class="kontakt" id="kontakt">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Direkt an uns</div>
+      <h2 style="font-size:2.2rem;">Was auf dem Herzen?</h2>
+      <p style="color:var(--muted);">Lob, Kritik, Fragen zu einer Bestellung oder einfach nur Hallo sagen — schreibt uns.</p>
+    </div>
+    <form class="kontakt-form" id="kontaktForm">
+      <div class="kontakt-row">
+        <input type="text" id="kName" placeholder="Dein Name" required class="kontakt-input">
+        <input type="email" id="kEmail" placeholder="Deine E-Mail" required class="kontakt-input">
+      </div>
+      <textarea id="kMessage" placeholder="Deine Nachricht..." required class="kontakt-input" rows="5"></textarea>
+      <button type="submit" class="btn btn-primary" id="kSubmitBtn">Nachricht senden</button>
+      <div id="kMsg" class="kontakt-msg"></div>
+    </form>
   </div>
 </section>
 
@@ -748,6 +859,7 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
       <div class="foot-brand">BERLIN <span style="color:var(--red);">DÖNER</span></div>
       <div class="foot-links">
         <a href="#menu" data-i18n="navMenu">Speisekarte</a>
+        <a href="#kontakt" data-i18n="navContact">Kontakt</a>
         <a href="personal.html" class="staff-link" data-i18n="navStaff">Personal</a>
         <button class="foot-order-link" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">Lieferando</button>
         <button class="foot-order-link" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">Wolt</button>
@@ -763,6 +875,160 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
 </footer>
 
 <script>
+// ---- Live opening hours: staff can update these, everyone sees them ----
+window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:00 – 23:00' };
+(function(){
+  fetch('/.netlify/functions/site-data?key=hours')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if(!data || !data.value) return;
+      const v = data.value;
+      if(v.moDo) document.getElementById('hoursMoDo').textContent = v.moDo;
+      if(v.frSa) document.getElementById('hoursFrSa').textContent = v.frSa;
+      if(v.so) document.getElementById('hoursSo').textContent = v.so;
+      window.__bdHours = { moDo: v.moDo || window.__bdHours.moDo, frSa: v.frSa || window.__bdHours.frSa, so: v.so || window.__bdHours.so };
+    })
+    .catch(() => {});
+})();
+
+// ---- Live announcement banner: staff can post a temporary message ----
+(function(){
+  fetch('/.netlify/functions/site-data?key=announcement')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if(!data || !data.value || !data.value.active || !data.value.text) return;
+      const bar = document.createElement('div');
+      bar.id = 'announceBar';
+      bar.innerHTML = '<span>📣 ' + data.value.text.replace(/</g,'&lt;') + '</span><button type="button" aria-label="Schließen">&times;</button>';
+      document.body.appendChild(bar);
+      const nav = document.querySelector('.nav');
+      function pushNavDown(){ if(nav) nav.style.top = bar.offsetHeight + 'px'; }
+      pushNavDown();
+      window.addEventListener('resize', pushNavDown);
+      bar.querySelector('button').addEventListener('click', () => {
+        bar.remove();
+        if(nav) nav.style.top = '0';
+      });
+    })
+    .catch(() => {});
+})();
+
+// ---- Simple assistant (rule-based FAQ, no external AI service required) ----
+(function(){
+  const fab = document.getElementById('chatFab');
+  const widget = document.getElementById('chatWidget');
+  const closeBtn = document.getElementById('chatClose');
+  const body = document.getElementById('chatBody');
+  const form = document.getElementById('chatForm');
+  const input = document.getElementById('chatInput');
+  if(!fab) return;
+
+  function addMsg(text, who){
+    const el = document.createElement('div');
+    el.className = 'chat-msg ' + who;
+    el.textContent = text;
+    body.appendChild(el);
+    body.scrollTop = body.scrollHeight;
+  }
+
+  let greeted = false;
+  function openChat(){
+    widget.classList.add('open');
+    if(!greeted){
+      greeted = true;
+      addMsg('Hey! 👋 Ich bin der Berlin-Döner-Assistent. Frag mich nach Öffnungszeiten, Adresse, der Speisekarte oder Lieferoptionen.', 'bot');
+    }
+  }
+  fab.addEventListener('click', openChat);
+  closeBtn.addEventListener('click', () => widget.classList.remove('open'));
+
+  function answer(raw){
+    const q = raw.toLowerCase();
+    const h = window.__bdHours || {};
+
+    if(/(öffnung|offen|geöffnet|geschlossen|uhrzeit|wann.*auf|zeiten)/.test(q)){
+      return `Unsere Öffnungszeiten:\nMo–Do: ${h.moDo}\nFr–Sa: ${h.frSa}\nSo: ${h.so}`;
+    }
+    if(/(adresse|wo seid|standort|anfahrt|wo liegt|wo ist)/.test(q)){
+      return 'Wir sind am Kollegienwall 1a, 49074 Osnabrück — mitten in der Innenstadt, ein paar Schritte vom ZOB entfernt.';
+    }
+    if(/(liefer|lieferando|wolt|uber ?eats|bestell)/.test(q)){
+      return 'Bestellen könnt ihr über Lieferando, Wolt oder Uber Eats — die Buttons findet ihr oben rechts unter "Bestellen".';
+    }
+    if(/(speisekarte|menü|karte|preis|kostet|was gibt)/.test(q)){
+      return 'Unsere Klassiker: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) und mehr. Die volle Karte gibt\'s weiter oben im Bereich "Speisekarte".';
+    }
+    if(/(helal|halal)/.test(q)){
+      return 'Ja, unser Fleisch ist zu 100% Helal. 🕌';
+    }
+    if(/(vegetarisch|vegan|veggie|fleischlos)/.test(q)){
+      return 'Wir haben eine Veggie Tasche mit gebratenem Gemüse und eine Falafel Tasche für alle ohne Fleisch.';
+    }
+    if(/(kontakt|erreichen|anrufen|telefon|email|e-mail)/.test(q)){
+      return 'Am einfachsten über das Kontaktformular weiter unten auf der Seite — oder über Instagram @berlindoener_os.';
+    }
+    if(/(hallo|hi|hey|moin|guten tag)/.test(q)){
+      return 'Hallo! Wie kann ich helfen? Frag mich z. B. nach Öffnungszeiten oder der Speisekarte.';
+    }
+    if(/(danke|thx|dankeschön)/.test(q)){
+      return 'Gerne! 😊 Guten Hunger!';
+    }
+    return 'Das habe ich nicht ganz verstanden — versuch es z. B. mit "Öffnungszeiten", "Adresse" oder "Speisekarte". Für alles andere hilft dir gerne das Kontaktformular weiter unten weiter.';
+  }
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const val = input.value.trim();
+    if(!val) return;
+    addMsg(val, 'user');
+    input.value = '';
+    setTimeout(() => addMsg(answer(val), 'bot'), 400);
+  });
+})();
+
+// ---- Contact form: sends the message to the staff panel (and by email if configured) ----
+(function(){
+  const form = document.getElementById('kontaktForm');
+  if(!form) return;
+  const msgEl = document.getElementById('kMsg');
+  const btn = document.getElementById('kSubmitBtn');
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('kName').value.trim();
+    const email = document.getElementById('kEmail').value.trim();
+    const message = document.getElementById('kMessage').value.trim();
+    if(!name || !email || !message) return;
+
+    btn.disabled = true;
+    msgEl.textContent = 'Wird gesendet …';
+    msgEl.className = 'kontakt-msg';
+
+    fetch('/.netlify/functions/site-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ key: 'messages', value: { name, email, message } }),
+    })
+      .then(r => r.ok)
+      .then(ok => {
+        btn.disabled = false;
+        if(ok){
+          msgEl.textContent = '✅ Danke! Deine Nachricht ist angekommen.';
+          msgEl.className = 'kontakt-msg ok';
+          form.reset();
+        } else {
+          msgEl.textContent = '❌ Konnte nicht gesendet werden. Bitte später erneut versuchen.';
+          msgEl.className = 'kontakt-msg err';
+        }
+      })
+      .catch(() => {
+        btn.disabled = false;
+        msgEl.textContent = '❌ Konnte nicht gesendet werden. Bitte Internetverbindung prüfen.';
+        msgEl.className = 'kontakt-msg err';
+      });
+  });
+})();
+
 // ---- Live menu: fetch staff-edited prices/items so ALL visitors see updates ----
 // Falls back silently to the prices already written into this page if the
 // function isn't reachable yet (e.g. right after first deploy).
@@ -849,6 +1115,65 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
 
 const PHOTOS = ["images/ph00.jpg", "images/ph01.jpg", "images/ph02.jpg", "images/ph03.jpg", "images/ph04.jpg", "images/ph05.jpg", "images/ph06.jpg", "images/ph07.jpg", "images/ph08.jpg", "images/ph09.jpg", "images/ph10.jpg", "images/ph11.jpg", "images/ph12.jpg", "images/ph13.jpg", "images/ph14.jpg", "images/ph15.jpg", "images/ph16.jpg", "images/ph17.jpg", "images/ph18.jpg", "images/ph19.jpg", "images/ph20.jpg", "images/ph21.jpg", "images/ph22.jpg", "images/ph23.jpg", "images/ph24.jpg", "images/ph25.jpg", "images/ph26.jpg", "images/ph27.jpg", "images/ph28.jpg", "images/ph29.jpg", "images/ph30.jpg", "images/ph31.jpg", "images/ph32.jpg", "images/ph33.jpg", "images/ph34.jpg", "images/ph35.jpg", "images/ph36.jpg", "images/ph37.jpg", "images/ph38.jpg", "images/ph39.jpg", "images/ph40.jpg", "images/ph41.jpg", "images/ph42.jpg", "images/ph43.jpg", "images/ph44.jpg", "images/ph45.jpg", "images/ph46.jpg", "images/ph47.jpg", "images/ph48.jpg", "images/ph49.jpg", "images/ph50.jpg", "images/ph51.jpg", "images/ph52.jpg", "images/ph53.jpg", "images/ph54.jpg", "images/ph55.jpg"];
 
+// ---- Rotating 5-tile gallery (cycles through ALL site photos every 4s) + lightbox ----
+(function(){
+  const tiles = ['gTile0','gTile1','gTile2','gTile3','gTile4']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  if(!tiles.length || !PHOTOS || !PHOTOS.length) return;
+
+  // Preload every photo once so swapping src never shows a blank/invisible frame.
+  PHOTOS.forEach(src => { const im = new Image(); im.src = src; });
+
+  const state = tiles.map((tile, i) => ({
+    tile,
+    img: tile.querySelector('img'),
+    index: Math.floor((PHOTOS.length / tiles.length) * i),
+  }));
+
+  state.forEach(s => {
+    s.tile.style.cursor = 'pointer';
+    s.tile.addEventListener('click', () => openLightbox(s.index));
+  });
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduce){
+    setInterval(() => {
+      state.forEach(s => {
+        s.index = (s.index + tiles.length) % PHOTOS.length;
+        s.img.style.opacity = '0';
+        setTimeout(() => {
+          s.img.src = PHOTOS[s.index];
+          s.img.style.opacity = '1';
+        }, 350);
+      });
+    }, 4000);
+  }
+
+  let currentIndex = 0;
+  function openLightbox(i){
+    currentIndex = i;
+    lbImg.src = PHOTOS[i];
+    lightbox.classList.add('open');
+  }
+  function closeLightbox(){ lightbox.classList.remove('open'); }
+  function showNext(){ currentIndex = (currentIndex + 1) % PHOTOS.length; lbImg.src = PHOTOS[currentIndex]; }
+  function showPrev(){ currentIndex = (currentIndex - 1 + PHOTOS.length) % PHOTOS.length; lbImg.src = PHOTOS[currentIndex]; }
+
+  document.getElementById('lbClose').addEventListener('click', closeLightbox);
+  document.getElementById('lbNext').addEventListener('click', showNext);
+  document.getElementById('lbPrev').addEventListener('click', showPrev);
+  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+  document.addEventListener('keydown', (e) => {
+    if(!lightbox.classList.contains('open')) return;
+    if(e.key === 'Escape') closeLightbox();
+    if(e.key === 'ArrowRight') showNext();
+    if(e.key === 'ArrowLeft') showPrev();
+  });
+})();
+
 function openOrder(url){
   if(window.__bdTrackOrderClick){ window.__bdTrackOrderClick(url); }
   const w = window.open(url, '_blank');
@@ -902,6 +1227,7 @@ const I18N = {
   navGallery:  { de:"Galerie", en:"Gallery", tr:"Galeri", ro:"Galerie" },
   navOrder:    { de:"Bestellen", en:"Order", tr:"Sipariş Ver", ro:"Comandă" },
   navLocation: { de:"Standort", en:"Location", tr:"Konum", ro:"Locație" },
+  navContact:  { de:"Kontakt", en:"Contact", tr:"İletişim", ro:"Contact" },
   navStaff:    { de:"Personal", en:"Staff", tr:"Personel", ro:"Personal" },
   heroSub: {
     de:'Kalb-, Hähnchen- und <b>Steakspieße</b> nach Berliner Art, <b>hausgemachte Soßen</b> und ein Laden, der aussieht, als wäre ein Stück Kreuzberg direkt am Kollegienwall gelandet.',

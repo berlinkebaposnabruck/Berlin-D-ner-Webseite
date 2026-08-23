@@ -267,7 +267,48 @@ body{
     <button type="button" id="saveMenuBtn" class="submit-btn" style="margin-top:26px;background:var(--red);width:100%;">💾 Speichern &amp; für alle Kunden veröffentlichen</button>
     <div id="saveMenuMsg" style="margin-top:12px;font-size:0.85rem;"></div>
   </div>
+
+  <div class="panel" id="hoursPanel">
+    <h2>Öffnungszeiten verwalten</h2>
+    <p class="panel-note" style="margin-top:0;">✅ Änderungen werden nach dem Speichern für alle Besucher auf der Website live sichtbar.</p>
+    <label class="field-label" style="text-align:left;">Mo – Do</label>
+    <input type="text" id="hMoDo" class="menu-input" placeholder="z. B. 11:00 – 23:00">
+    <label class="field-label" style="text-align:left;">Fr – Sa</label>
+    <input type="text" id="hFrSa" class="menu-input" placeholder="z. B. 11:00 – 05:00">
+    <label class="field-label" style="text-align:left;">So</label>
+    <input type="text" id="hSo" class="menu-input" placeholder="z. B. 11:00 – 23:00">
+    <button type="button" id="saveHoursBtn" class="submit-btn" style="margin-top:10px;background:var(--red);">💾 Öffnungszeiten speichern</button>
+    <div id="saveHoursMsg" style="margin-top:12px;font-size:0.85rem;"></div>
+  </div>
+
+  <div class="panel" id="announcePanel">
+    <h2>Kunden informieren</h2>
+    <p class="panel-note" style="margin-top:0;">Für Events, Sonderöffnungszeiten, kurzfristige Schließung usw. — erscheint als Banner ganz oben auf der Website.</p>
+    <textarea id="announceText" class="menu-input" rows="3" placeholder="z. B. 🎉 Am Samstag wegen Stadtfest bis 02:00 Uhr geöffnet!"></textarea>
+    <label style="display:flex;align-items:center;gap:10px;margin:10px 0 16px;font-size:0.88rem;cursor:pointer;">
+      <input type="checkbox" id="announceActive" style="width:18px;height:18px;">
+      Banner auf der Website anzeigen
+    </label>
+    <button type="button" id="saveAnnounceBtn" class="submit-btn" style="background:var(--red);">💾 Ankündigung veröffentlichen</button>
+    <div id="saveAnnounceMsg" style="margin-top:12px;font-size:0.85rem;"></div>
+  </div>
+
+  <div class="panel" id="messagesPanel">
+    <h2>Nachrichten von Kunden</h2>
+    <div id="messagesStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade Nachrichten…</div>
+    <div id="messagesList"></div>
+  </div>
 </div>
+
+<style>
+  #messagesList .msg-item{
+    background:var(--ink);border:1px solid var(--line);border-radius:8px;
+    padding:14px 16px;margin-bottom:10px;
+  }
+  #messagesList .msg-meta{font-size:0.75rem;color:var(--muted);margin-bottom:6px;}
+  #messagesList .msg-meta b{color:var(--chalk);}
+  #messagesList .msg-text{font-size:0.9rem;line-height:1.5;white-space:pre-wrap;}
+</style>
 
 <script>
 // If opened inside the in-page "Personal" window (an iframe on index.html),
@@ -542,6 +583,123 @@ resetBtn.addEventListener('click', ()=>{
         saveMsgEl.style.color = '#ffb3a0';
       });
   });
+})();
+
+// ---- Opening hours management ----
+(function(){
+  const moDoInput = document.getElementById('hMoDo');
+  const frSaInput = document.getElementById('hFrSa');
+  const soInput = document.getElementById('hSo');
+  const saveBtn = document.getElementById('saveHoursBtn');
+  const msgEl = document.getElementById('saveHoursMsg');
+
+  fetch('/.netlify/functions/site-data?key=hours')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      const v = (data && data.value) || {};
+      moDoInput.value = v.moDo || '11:00 – 23:00';
+      frSaInput.value = v.frSa || '11:00 – 05:00';
+      soInput.value = v.so || '11:00 – 23:00';
+    })
+    .catch(() => {
+      moDoInput.value = '11:00 – 23:00';
+      frSaInput.value = '11:00 – 05:00';
+      soInput.value = '11:00 – 23:00';
+    });
+
+  saveBtn.addEventListener('click', () => {
+    msgEl.textContent = 'Speichere …';
+    msgEl.style.color = 'var(--muted)';
+    fetch('/.netlify/functions/site-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key: 'hours',
+        password: PASSWORD,
+        value: { moDo: moDoInput.value, frSa: frSaInput.value, so: soInput.value },
+      }),
+    })
+      .then(r => r.ok)
+      .then(ok => {
+        msgEl.textContent = ok ? '✅ Gespeichert! Für alle Besucher live.' : '❌ Fehler beim Speichern.';
+        msgEl.style.color = ok ? '#7fd8d3' : '#ffb3a0';
+      })
+      .catch(() => {
+        msgEl.textContent = '❌ Konnte nicht speichern. Internetverbindung prüfen.';
+        msgEl.style.color = '#ffb3a0';
+      });
+  });
+})();
+
+// ---- Customer announcement banner management ----
+(function(){
+  const textEl = document.getElementById('announceText');
+  const activeEl = document.getElementById('announceActive');
+  const saveBtn = document.getElementById('saveAnnounceBtn');
+  const msgEl = document.getElementById('saveAnnounceMsg');
+
+  fetch('/.netlify/functions/site-data?key=announcement')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      const v = (data && data.value) || {};
+      textEl.value = v.text || '';
+      activeEl.checked = !!v.active;
+    })
+    .catch(() => {});
+
+  saveBtn.addEventListener('click', () => {
+    msgEl.textContent = 'Speichere …';
+    msgEl.style.color = 'var(--muted)';
+    fetch('/.netlify/functions/site-data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        key: 'announcement',
+        password: PASSWORD,
+        value: { text: textEl.value, active: activeEl.checked },
+      }),
+    })
+      .then(r => r.ok)
+      .then(ok => {
+        msgEl.textContent = ok ? '✅ Gespeichert! Für alle Besucher live.' : '❌ Fehler beim Speichern.';
+        msgEl.style.color = ok ? '#7fd8d3' : '#ffb3a0';
+      })
+      .catch(() => {
+        msgEl.textContent = '❌ Konnte nicht speichern. Internetverbindung prüfen.';
+        msgEl.style.color = '#ffb3a0';
+      });
+  });
+})();
+
+// ---- Customer messages viewer ----
+(function(){
+  const statusEl = document.getElementById('messagesStatus');
+  const listEl = document.getElementById('messagesList');
+
+  fetch('/.netlify/functions/site-data?key=messages')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      const items = (data && Array.isArray(data.items)) ? data.items : [];
+      if(!items.length){
+        statusEl.textContent = 'Noch keine Nachrichten von Kunden.';
+        return;
+      }
+      statusEl.textContent = items.length + ' Nachricht(en)';
+      items.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'msg-item';
+        const date = item.receivedAt ? new Date(item.receivedAt).toLocaleString('de-DE') : '';
+        div.innerHTML =
+          '<div class="msg-meta"><b>' + (item.name || 'Unbekannt') + '</b> · ' +
+          (item.email || '') + ' · ' + date + '</div>' +
+          '<div class="msg-text"></div>';
+        div.querySelector('.msg-text').textContent = item.message || '';
+        listEl.appendChild(div);
+      });
+    })
+    .catch(() => {
+      statusEl.textContent = '⚠️ Nachrichten konnten nicht geladen werden.';
+    });
 })();
 
 </script>
