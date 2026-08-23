@@ -202,7 +202,7 @@ header.nav{
   overflow:hidden;
 }
 .hero-slide{
-  position:absolute;inset:0;background-size:cover;background-position:center 15%;
+  position:absolute;inset:0;background-size:cover;background-position:center 5%;
   opacity:0;transition:opacity 1.6s ease;
   filter:grayscale(0.25) contrast(1.12) saturate(1.08);
 }
@@ -311,7 +311,7 @@ section{padding:100px 0;position:relative;}
   clip-path:polygon(1% 3%,22% 0%,48% 2%,71% 0%,99% 4%,100% 30%,98% 55%,100% 78%,97% 100%,68% 98%,40% 100%,15% 97%,0% 100%,2% 70%,0% 42%);
 }
 .wpost .frame-slide{
-  position:absolute;inset:6px;background-size:cover;background-position:center 20%;
+  position:absolute;inset:6px;background-size:cover;background-position:center 8%;
   opacity:0;transition:opacity 1.4s ease;
   filter:grayscale(0.3) contrast(1.15) saturate(1.05);
 }
@@ -380,6 +380,29 @@ section{padding:100px 0;position:relative;}
 }
 .gal-full-grid img:hover{transform:scale(1.05);filter:saturate(1.25);}
 
+.gal-rotator{
+  display:grid;grid-template-columns:repeat(5, 1fr);gap:10px;
+}
+.gal-rotator-slot{
+  position:relative;height:190px;border-radius:6px;overflow:hidden;
+  background:var(--panel);cursor:pointer;
+}
+.gal-rotator-slot img{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;
+  opacity:0;transition:opacity 1s ease, transform .3s ease;
+  filter:grayscale(0.15) saturate(1.05);
+}
+.gal-rotator-slot img.active{opacity:1;}
+.gal-rotator-slot:hover img.active{transform:scale(1.06);}
+@media (max-width:900px){
+  .gal-rotator{grid-template-columns:repeat(3, 1fr);}
+  .gal-rotator-slot:nth-child(n+4){display:none;}
+}
+@media (max-width:560px){
+  .gal-rotator{grid-template-columns:repeat(2, 1fr);}
+  .gal-rotator-slot{height:150px;}
+}
+
 .lightbox{
   position:fixed;inset:0;background:rgba(5,5,8,0.94);z-index:1000;
   display:none;align-items:center;justify-content:center;
@@ -398,6 +421,28 @@ section{padding:100px 0;position:relative;}
 .lb-nav:hover{background:rgba(255,255,255,0.18);}
 .lb-prev{left:16px;}
 .lb-next{right:16px;}
+
+.staff-modal{
+  position:fixed;inset:0;background:rgba(5,5,8,0.85);z-index:1100;
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+.staff-modal.open{display:flex;}
+.staff-modal-inner{
+  position:relative;width:100%;max-width:900px;height:88vh;
+  background:#0a0a0f;border-radius:12px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+}
+.staff-modal-inner iframe{width:100%;height:100%;border:none;display:block;}
+.staff-modal-close{
+  position:absolute;top:10px;right:14px;z-index:2;background:rgba(0,0,0,0.5);
+  border:none;color:#f4efe2;font-size:1.8rem;width:38px;height:38px;border-radius:50%;
+  cursor:pointer;line-height:1;
+}
+.staff-modal-close:hover{background:rgba(0,0,0,0.75);}
+@media (max-width:700px){
+  .staff-modal{padding:0;}
+  .staff-modal-inner{max-width:100%;height:100%;border-radius:0;}
+}
 @media (max-width:700px){
   .gal-full-grid{grid-template-columns:repeat(auto-fill, minmax(105px, 1fr));}
   .gal-full-grid img{height:105px;}
@@ -519,7 +564,7 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
       <a href="#galerie" data-i18n="navGallery">Galerie</a>
       <a href="#bestellen" data-i18n="navOrder">Bestellen</a>
       <a href="#standort" data-i18n="navLocation">Standort</a>
-      <a href="personal.html" target="_blank" rel="noopener" data-i18n="navStaff">Personal</a>
+      <a href="personal.html" class="staff-link" data-i18n="navStaff">Personal</a>
     </nav>
     <div class="nav-right">
       <div class="nav-order-full">
@@ -705,8 +750,9 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     <div class="section-head" style="margin-top:60px;">
       <div class="eyebrow">Mehr aus unserer Küche</div>
       <h2 style="font-size:1.8rem;">Alle Eindrücke.</h2>
+      <p style="color:var(--muted);margin-top:8px;">Ein kleiner Ausschnitt — die Bilder wechseln von selbst. Zum Vergrößern antippen.</p>
     </div>
-    <div class="gal-full-grid" id="galFullGrid"></div>
+    <div class="gal-rotator" id="galRotator"></div>
   </div>
 </section>
 
@@ -715,6 +761,13 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
   <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Vorheriges Bild">&#8249;</button>
   <img id="lbImg" src="" alt="">
   <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Nächstes Bild">&#8250;</button>
+</div>
+
+<div class="staff-modal" id="staffModal">
+  <div class="staff-modal-inner">
+    <button class="staff-modal-close" id="staffModalClose" type="button" aria-label="Schließen">&times;</button>
+    <iframe id="staffModalFrame" src="" title="Personal-Bereich"></iframe>
+  </div>
 </div>
 
 <section class="reviews">
@@ -759,7 +812,7 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
       <div class="foot-brand">BERLIN <span style="color:var(--red);">DÖNER</span></div>
       <div class="foot-links">
         <a href="#menu" data-i18n="navMenu">Speisekarte</a>
-        <a href="personal.html" target="_blank" rel="noopener" data-i18n="navStaff">Personal</a>
+        <a href="personal.html" class="staff-link" data-i18n="navStaff">Personal</a>
         <button class="foot-order-link" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">Lieferando</button>
         <button class="foot-order-link" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">Wolt</button>
         <button class="foot-order-link" data-url="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ" style="background:none;border:none;color:inherit;font:inherit;cursor:pointer;padding:0;">Uber Eats</button>
@@ -827,26 +880,80 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     .catch(() => { /* keep static fallback, e.g. function not deployed yet */ });
 })();
 
-// ---- Full photo gallery grid + lightbox ----
+// ---- Personal (staff) area opens in an in-page window instead of a new tab ----
 (function(){
-  const grid = document.getElementById('galFullGrid');
-  const lightbox = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lbImg');
-  if(!grid) return;
+  const modal = document.getElementById('staffModal');
+  const frame = document.getElementById('staffModalFrame');
+  const closeBtn = document.getElementById('staffModalClose');
+  if(!modal) return;
 
-  function buildGrid(){
-    grid.innerHTML = '';
-    PHOTOS.forEach((src, i) => {
-      const img = document.createElement('img');
-      img.src = src;
-      img.loading = 'lazy';
-      img.alt = 'Berlin Döner Osnabrück — Impression ' + (i+1);
-      img.addEventListener('click', () => openLightbox(i));
-      grid.appendChild(img);
-    });
+  function openStaffModal(){
+    frame.src = 'personal.html';
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeStaffModal(){
+    modal.classList.remove('open');
+    frame.src = '';
+    document.body.style.overflow = '';
   }
 
+  document.querySelectorAll('.staff-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      openStaffModal();
+    });
+  });
+  closeBtn.addEventListener('click', closeStaffModal);
+  modal.addEventListener('click', (e) => { if(e.target === modal) closeStaffModal(); });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape' && modal.classList.contains('open')) closeStaffModal();
+  });
+})();
+
+// ---- Rotating gallery (5 slots on screen, cycling through ALL photos) + lightbox ----
+(function(){
+  const rotator = document.getElementById('galRotator');
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  if(!rotator) return;
+
+  const SLOT_COUNT = 5;
+  const CYCLE_MS = 3200;
+  let slots = []; // { el, img, index }
   let currentIndex = 0;
+
+  function buildRotator(){
+    rotator.innerHTML = '';
+    slots = [];
+    for(let s = 0; s < SLOT_COUNT; s++){
+      const slot = document.createElement('div');
+      slot.className = 'gal-rotator-slot';
+      const startIndex = Math.floor((PHOTOS.length / SLOT_COUNT) * s);
+
+      const img = document.createElement('img');
+      img.src = PHOTOS[startIndex];
+      img.className = 'active';
+      img.alt = 'Berlin Döner Osnabrück — Impression';
+      slot.appendChild(img);
+
+      const slotData = { el: slot, img: img, index: startIndex };
+      slot.addEventListener('click', () => openLightbox(slotData.index));
+      rotator.appendChild(slot);
+      slots.push(slotData);
+    }
+  }
+
+  function tickSlot(slotData){
+    const nextIndex = (slotData.index + SLOT_COUNT) % PHOTOS.length;
+    slotData.img.style.opacity = '0';
+    setTimeout(() => {
+      slotData.img.src = PHOTOS[nextIndex];
+      slotData.index = nextIndex;
+      slotData.img.style.opacity = '1';
+    }, 500);
+  }
+
   function openLightbox(i){
     currentIndex = i;
     lbImg.src = PHOTOS[i];
@@ -867,8 +974,17 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     if(e.key === 'ArrowLeft') showPrev();
   });
 
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // Defer to next tick so the PHOTOS const (declared further down in this script) is initialized
-  setTimeout(buildGrid, 0);
+  setTimeout(() => {
+    buildRotator();
+    if(!reduce){
+      slots.forEach((slotData, i) => {
+        setInterval(() => tickSlot(slotData), CYCLE_MS + i * 400);
+      });
+    }
+  }, 0);
 })();
 
 const PHOTOS = ["images/ph00.jpg", "images/ph01.jpg", "images/ph02.jpg", "images/ph03.jpg", "images/ph04.jpg", "images/ph05.jpg", "images/ph06.jpg", "images/ph07.jpg", "images/ph08.jpg", "images/ph09.jpg", "images/ph10.jpg", "images/ph11.jpg", "images/ph12.jpg", "images/ph13.jpg", "images/ph14.jpg", "images/ph15.jpg", "images/ph16.jpg", "images/ph17.jpg", "images/ph18.jpg", "images/ph19.jpg", "images/ph20.jpg", "images/ph21.jpg", "images/ph22.jpg", "images/ph23.jpg", "images/ph24.jpg", "images/ph25.jpg", "images/ph26.jpg", "images/ph27.jpg", "images/ph28.jpg", "images/ph29.jpg", "images/ph30.jpg", "images/ph31.jpg", "images/ph32.jpg", "images/ph33.jpg", "images/ph34.jpg", "images/ph35.jpg", "images/ph36.jpg", "images/ph37.jpg", "images/ph38.jpg", "images/ph39.jpg", "images/ph40.jpg", "images/ph41.jpg", "images/ph42.jpg", "images/ph43.jpg", "images/ph44.jpg", "images/ph45.jpg", "images/ph46.jpg", "images/ph47.jpg", "images/ph48.jpg", "images/ph49.jpg", "images/ph50.jpg", "images/ph51.jpg", "images/ph52.jpg", "images/ph53.jpg", "images/ph54.jpg", "images/ph55.jpg"];

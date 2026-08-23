@@ -163,7 +163,7 @@ body{
 
 <div class="topbar">
   <div class="brand">BERLIN <span>DÖNER</span> · Personal</div>
-  <a class="back-link" href="berlin-doener-osnabrueck.html">← Zur Website</a>
+  <a class="back-link" href="index.html" id="backLink">← Zur Website</a>
 </div>
 
 <div class="login-screen" id="loginScreen">
@@ -270,6 +270,24 @@ body{
 </div>
 
 <script>
+// If opened inside the in-page "Personal" window (an iframe on index.html),
+// make the back link close that window instead of navigating the iframe itself.
+(function(){
+  const backLink = document.getElementById('backLink');
+  const inIframe = window.self !== window.top;
+  if(inIframe && backLink){
+    backLink.textContent = '✕ Schließen';
+    backLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      try {
+        window.parent.document.getElementById('staffModal').classList.remove('open');
+        window.parent.document.getElementById('staffModalFrame').src = '';
+        window.parent.document.body.style.overflow = '';
+      } catch(err){ window.top.location.href = 'index.html'; }
+    });
+  }
+})();
+
 const PASSWORD = '0021';
 
 function getNum(key){
