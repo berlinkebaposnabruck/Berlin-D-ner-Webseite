@@ -103,6 +103,20 @@ header.nav{
 .nav-order-full .dd-btn{padding:9px 14px;font-size:0.74rem;}
 .nav-order-compact{display:block;}
 .nav-toggle{display:none;background:none;border:none;color:var(--chalk);font-size:2.2rem;cursor:pointer;line-height:1;padding:4px 6px;}
+.status-bar{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:7px 14px;font-size:0.76rem;font-weight:700;letter-spacing:0.03em;
+  border-top:1px solid var(--line);
+  background:rgba(255,255,255,0.02);
+  text-transform:uppercase;
+}
+.status-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;box-shadow:0 0 0 3px rgba(255,255,255,0.05);}
+.status-bar.open .status-dot{background:#3ecf8e;box-shadow:0 0 0 3px rgba(62,207,142,0.18);}
+.status-bar.open #statusText{color:#7fe3b4;}
+.status-bar.closing .status-dot{background:var(--amber);box-shadow:0 0 0 3px rgba(242,169,59,0.18);}
+.status-bar.closing #statusText{color:var(--amber);}
+.status-bar.closed .status-dot{background:var(--red-hi);box-shadow:0 0 0 3px rgba(255,106,74,0.18);}
+.status-bar.closed #statusText{color:#ffb3a0;}
 .lang-trigger{position:relative;}
 .lang-trigger-btn{
   background:var(--panel);border:1px solid var(--line);color:var(--chalk);
@@ -217,11 +231,11 @@ header.nav{
 }
 .hero-overlay2{position:absolute;inset:0;z-index:1;background:rgba(8,8,13,0.08);}
 .hero-inner{
-  width:100%;padding:120px 28px 70px;max-width:1180px;margin:0 auto;
+  width:100%;padding:152px 28px 70px;max-width:1180px;margin:0 auto;
   position:relative;z-index:2;
 }
 .hero-logo{max-width:380px;width:60%;margin-bottom:6px;filter:drop-shadow(0 8px 30px rgba(0,0,0,0.6));}
-.hero-logo-spacer{height:180px;}
+.hero-logo-spacer{height:230px;}
 .hero h1.sr{position:absolute;left:-9999px;}
 .hero-sub{
   font-size:1.08rem;color:var(--chalk);max-width:520px;line-height:1.55;
@@ -474,6 +488,13 @@ section{padding:100px 0;position:relative;}
 .chat-msg{max-width:82%;padding:10px 13px;border-radius:12px;font-size:0.88rem;line-height:1.45;}
 .chat-msg.bot{background:var(--ink);color:var(--chalk);align-self:flex-start;border-bottom-left-radius:2px;}
 .chat-msg.user{background:var(--teal);color:var(--chalk);align-self:flex-end;border-bottom-right-radius:2px;}
+.chat-suggestions{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px;}
+.chat-chip{
+  background:var(--ink);border:1px solid var(--line);color:var(--chalk);
+  padding:7px 12px;border-radius:14px;font-size:0.76rem;cursor:pointer;font-family:inherit;
+  transition:.2s;white-space:nowrap;
+}
+.chat-chip:hover{border-color:var(--amber);color:var(--amber);}
 .chat-form{display:flex;border-top:1px solid var(--line);}
 .chat-form input{
   flex:1;background:var(--ink);border:none;padding:13px 14px;color:var(--chalk);font-family:inherit;font-size:0.88rem;
@@ -617,6 +638,10 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
       </div>
       <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
     </div>
+  </div>
+  <div id="statusBar" class="status-bar">
+    <span id="statusDot" class="status-dot"></span>
+    <span id="statusText">—</span>
   </div>
 </header>
 
@@ -792,6 +817,7 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     <button type="button" id="chatClose" aria-label="Schließen">&times;</button>
   </div>
   <div class="chat-body" id="chatBody"></div>
+  <div class="chat-suggestions" id="chatSuggestions"></div>
   <form class="chat-form" id="chatForm">
     <input type="text" id="chatInput" placeholder="Frag mich etwas…" autocomplete="off">
     <button type="submit">➤</button>
@@ -931,8 +957,68 @@ window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:0
     if(v.frSa) document.getElementById('hoursFrSa').textContent = v.frSa;
     if(v.so) document.getElementById('hoursSo').textContent = v.so;
     window.__bdHours = { moDo: v.moDo || window.__bdHours.moDo, frSa: v.frSa || window.__bdHours.frSa, so: v.so || window.__bdHours.so };
+    updateStatusBar();
   });
 })();
+
+// ---- Open/closed status bar (below nav): computes live from __bdHours ----
+function getHoursStringForDate(d){
+  const wd = d.getDay(); // 0=Sun..6=Sat
+  const h = window.__bdHours || {};
+  if(wd >= 1 && wd <= 4) return h.moDo;
+  if(wd === 5 || wd === 6) return h.frSa;
+  return h.so;
+}
+function parseHourRange(str){
+  if(!str) return null;
+  const parts = String(str).split(/[–—-]/).map(s => s.trim());
+  if(parts.length < 2) return null;
+  const o = parts[0].split(':').map(Number);
+  const c = parts[1].split(':').map(Number);
+  if([o[0],o[1],c[0],c[1]].some(n => isNaN(n))) return null;
+  return { openMin: o[0]*60 + o[1], closeMin: c[0]*60 + c[1] };
+}
+function buildSession(baseDate, rangeStr){
+  const r = parseHourRange(rangeStr);
+  if(!r) return null;
+  const start = new Date(baseDate); start.setHours(0,0,0,0); start.setMinutes(r.openMin);
+  const end = new Date(baseDate); end.setHours(0,0,0,0); end.setMinutes(r.closeMin);
+  if(r.closeMin <= r.openMin) end.setDate(end.getDate() + 1); // overnight (e.g. Fr–Sa bis 05:00)
+  return { start, end };
+}
+function updateStatusBar(){
+  const bar = document.getElementById('statusBar');
+  const textEl = document.getElementById('statusText');
+  if(!bar || !textEl) return;
+  let lang = 'de';
+  try { lang = localStorage.getItem('bd_lang') || 'de'; } catch(e){}
+  const now = new Date();
+  const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
+  const sessions = [
+    buildSession(yesterday, getHoursStringForDate(yesterday)),
+    buildSession(now, getHoursStringForDate(now)),
+  ].filter(Boolean);
+  let active = null;
+  for(const s of sessions){ if(now >= s.start && now < s.end){ active = s; break; } }
+  bar.classList.remove('open','closing','closed');
+  if(active){
+    const minsLeft = Math.round((active.end - now) / 60000);
+    if(minsLeft <= 30){
+      bar.classList.add('closing');
+      textEl.textContent = (I18N.statusClosingSoon[lang] || I18N.statusClosingSoon.de).replace('{m}', Math.max(minsLeft,1));
+    } else {
+      bar.classList.add('open');
+      textEl.textContent = I18N.statusOpen[lang] || I18N.statusOpen.de;
+    }
+  } else {
+    bar.classList.add('closed');
+    textEl.textContent = I18N.statusClosed[lang] || I18N.statusClosed.de;
+  }
+}
+document.addEventListener('DOMContentLoaded', updateStatusBar);
+document.querySelectorAll('.lang-opt').forEach(btn => btn.addEventListener('click', () => setTimeout(updateStatusBar, 0)));
+setInterval(updateStatusBar, 60000);
+updateStatusBar();
 
 // ---- Live announcement banner: staff can post a temporary message ----
 (function(){
@@ -959,9 +1045,32 @@ window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:0
   const widget = document.getElementById('chatWidget');
   const closeBtn = document.getElementById('chatClose');
   const body = document.getElementById('chatBody');
+  const suggestionsEl = document.getElementById('chatSuggestions');
   const form = document.getElementById('chatForm');
   const input = document.getElementById('chatInput');
   if(!fab) return;
+
+  const SUGGESTIONS = [
+    'Öffnungszeiten',
+    'Wo seid ihr?',
+    'Liefert ihr?',
+    'Ist das Fleisch Helal?',
+    'Habt ihr vegetarisch?',
+    'Kann man bar zahlen?',
+  ];
+
+  function renderSuggestions(){
+    if(!suggestionsEl) return;
+    suggestionsEl.innerHTML = '';
+    SUGGESTIONS.forEach(text => {
+      const chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'chat-chip';
+      chip.textContent = text;
+      chip.addEventListener('click', () => sendMessage(text));
+      suggestionsEl.appendChild(chip);
+    });
+  }
 
   function addMsg(text, who){
     const el = document.createElement('div');
@@ -971,12 +1080,28 @@ window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:0
     body.scrollTop = body.scrollHeight;
   }
 
+  function bumpFaqCounter(key){
+    try {
+      const k = 'bd_faq_' + key;
+      const cur = parseInt(localStorage.getItem(k) || '0', 10) || 0;
+      localStorage.setItem(k, String(cur + 1));
+    } catch(e){}
+  }
+
+  function logUnanswered(question){
+    try {
+      const key = 'unanswered:' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+      if(typeof safeSet === 'function') safeSet(key, { question, ts: Date.now() });
+    } catch(e){}
+  }
+
   let greeted = false;
   function openChat(){
     widget.classList.add('open');
     if(!greeted){
       greeted = true;
-      addMsg('Hey! 👋 Ich bin der Berlin-Döner-Assistent. Frag mich nach Öffnungszeiten, Adresse, der Speisekarte oder Lieferoptionen.', 'bot');
+      addMsg('Hey! 👋 Ich bin der Berlin-Döner-Assistent. Frag mich nach Öffnungszeiten, Adresse, der Speisekarte, Lieferoptionen und mehr.', 'bot');
+      renderSuggestions();
     }
   }
   fab.addEventListener('click', openChat);
@@ -987,33 +1112,62 @@ window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:0
     const h = window.__bdHours || {};
 
     if(/(öffnung|offen|geöffnet|geschlossen|uhrzeit|wann.*auf|zeiten)/.test(q)){
+      bumpFaqCounter('hours');
       return `Unsere Öffnungszeiten:\nMo–Do: ${h.moDo}\nFr–Sa: ${h.frSa}\nSo: ${h.so}`;
     }
-    if(/(adresse|wo seid|standort|anfahrt|wo liegt|wo ist)/.test(q)){
+    if(/(adresse|wo seid|standort|anfahrt|wo liegt|wo ist|parken|parkplatz)/.test(q)){
+      bumpFaqCounter('address');
+      if(/(park)/.test(q)) return 'Parkplätze gibt es ganz in der Nähe bei Galeria Kaufhof, nur ein paar Schritte entfernt.';
       return 'Wir sind am Kollegienwall 1a, 49074 Osnabrück — mitten in der Innenstadt, ein paar Schritte vom ZOB entfernt.';
     }
     if(/(liefer|lieferando|wolt|uber ?eats|bestell)/.test(q)){
+      bumpFaqCounter('delivery');
       return 'Bestellen könnt ihr über Lieferando, Wolt oder Uber Eats — die Buttons findet ihr oben rechts unter "Bestellen".';
     }
     if(/(speisekarte|menü|karte|preis|kostet|was gibt)/.test(q)){
+      bumpFaqCounter('menu');
       return 'Unsere Klassiker: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) und mehr. Die volle Karte gibt\'s weiter oben im Bereich "Speisekarte".';
     }
     if(/(helal|halal)/.test(q)){
+      bumpFaqCounter('halal');
       return 'Ja, unser Fleisch ist zu 100% Helal. 🕌';
     }
     if(/(vegetarisch|vegan|veggie|fleischlos)/.test(q)){
+      bumpFaqCounter('veggie');
       return 'Wir haben eine Veggie Tasche mit gebratenem Gemüse und eine Falafel Tasche für alle ohne Fleisch.';
     }
+    if(/(bar ?zahlen|karte zahlen|kartenzahlung|ec[- ]?karte|zahlung|bezahlen|paypal)/.test(q)){
+      bumpFaqCounter('payment');
+      return 'Bei uns im Laden könnt ihr sowohl bar als auch mit Karte zahlen. Bei Lieferando, Wolt und Uber Eats gelten deren eigene Zahlungsoptionen.';
+    }
+    if(/(catering|event|feier|firmenfeier|geburtstag|gruppe)/.test(q)){
+      bumpFaqCounter('catering');
+      return 'Für größere Bestellungen oder Feiern schreibt uns am besten direkt über das Kontaktformular weiter unten — wir finden eine Lösung.';
+    }
+    if(/(job|arbeit|bewerbung|mitarbeiter gesucht|aushilfe)/.test(q)){
+      bumpFaqCounter('jobs');
+      return 'Aktuell bitte über das Kontaktformular weiter unten anfragen — dort erreicht ihr uns direkt.';
+    }
     if(/(kontakt|erreichen|anrufen|telefon|email|e-mail)/.test(q)){
+      bumpFaqCounter('contact');
       return 'Am einfachsten über das Kontaktformular weiter unten auf der Seite — oder über Instagram @berlindoener_os.';
     }
     if(/(hallo|hi|hey|moin|guten tag)/.test(q)){
+      bumpFaqCounter('greeting');
       return 'Hallo! Wie kann ich helfen? Frag mich z. B. nach Öffnungszeiten oder der Speisekarte.';
     }
     if(/(danke|thx|dankeschön)/.test(q)){
       return 'Gerne! 😊 Guten Hunger!';
     }
+    bumpFaqCounter('unmatched');
+    logUnanswered(raw);
     return 'Das habe ich nicht ganz verstanden — versuch es z. B. mit "Öffnungszeiten", "Adresse" oder "Speisekarte". Für alles andere hilft dir gerne das Kontaktformular weiter unten weiter.';
+  }
+
+  function sendMessage(val){
+    if(!val) return;
+    addMsg(val, 'user');
+    setTimeout(() => addMsg(answer(val), 'bot'), 400);
   }
 
   form.addEventListener('submit', (e) => {
@@ -1160,7 +1314,7 @@ window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:0
 const PHOTOS = ["images/ph00.jpg", "images/ph01.jpg", "images/ph02.jpg", "images/ph03.jpg", "images/ph04.jpg", "images/ph05.jpg", "images/ph06.jpg", "images/ph07.jpg", "images/ph08.jpg", "images/ph09.jpg", "images/ph10.jpg", "images/ph11.jpg", "images/ph12.jpg", "images/ph13.jpg", "images/ph14.jpg", "images/ph15.jpg", "images/ph16.jpg", "images/ph17.jpg", "images/ph18.jpg", "images/ph19.jpg", "images/ph20.jpg", "images/ph21.jpg", "images/ph22.jpg", "images/ph23.jpg", "images/ph24.jpg", "images/ph25.jpg", "images/ph26.jpg", "images/ph27.jpg", "images/ph28.jpg", "images/ph29.jpg", "images/ph30.jpg", "images/ph31.jpg", "images/ph32.jpg", "images/ph33.jpg", "images/ph34.jpg", "images/ph35.jpg", "images/ph36.jpg", "images/ph37.jpg", "images/ph38.jpg", "images/ph39.jpg", "images/ph40.jpg", "images/ph41.jpg", "images/ph42.jpg", "images/ph43.jpg", "images/ph44.jpg", "images/ph45.jpg", "images/ph46.jpg", "images/ph47.jpg", "images/ph48.jpg", "images/ph49.jpg", "images/ph50.jpg", "images/ph51.jpg", "images/ph52.jpg", "images/ph53.jpg", "images/ph54.jpg", "images/ph55.jpg"];
 
 // ---- Rotating 5-tile gallery (cycles through ALL site photos every 4s) + lightbox ----
-(function(){
+function initGalleryLightbox(){
   const tiles = ['gTile0','gTile1','gTile2','gTile3','gTile4']
     .map(id => document.getElementById(id))
     .filter(Boolean);
@@ -1216,7 +1370,7 @@ const PHOTOS = ["images/ph00.jpg", "images/ph01.jpg", "images/ph02.jpg", "images
     if(e.key === 'ArrowRight') showNext();
     if(e.key === 'ArrowLeft') showPrev();
   });
-})();
+}
 
 function openOrder(url){
   if(window.__bdTrackOrderClick){ window.__bdTrackOrderClick(url); }
@@ -1323,6 +1477,9 @@ const I18N = {
     ro:"Acest site folosește stocare locală (ex. alegerea limbii) și statistici anonime de vizitatori pe acest dispozitiv. Fără partajare cu terți."
   },
   cookieAccept: { de:"Verstanden", en:"Got it", tr:"Anladım", ro:"Am înțeles" },
+  statusOpen: { de:"Jetzt geöffnet", en:"Open now", tr:"Şu an açık", ro:"Deschis acum" },
+  statusClosingSoon: { de:"Schließt in {m} Min.", en:"Closing in {m} min", tr:"{m} dk sonra kapanıyor", ro:"Se închide în {m} min" },
+  statusClosed: { de:"Geschlossen", en:"Closed", tr:"Şu an kapalı", ro:"Închis" },
 };
 
 (function(){
@@ -1431,6 +1588,14 @@ const I18N = {
     setNum('bd_pageviews', getNum('bd_pageviews') + 1);
     localStorage.setItem('bd_lastvisit_prev', localStorage.getItem('bd_lastvisit_current') || '—');
     localStorage.setItem('bd_lastvisit_current', new Date().toLocaleString('de-DE'));
+
+    // Device breakdown (rough heuristic — good enough for a staff overview, not exact analytics)
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.innerWidth < 900;
+    setNum(isMobile ? 'bd_device_mobile' : 'bd_device_desktop', getNum(isMobile ? 'bd_device_mobile' : 'bd_device_desktop') + 1);
+
+    // Language breakdown (counts the language active on THIS pageview)
+    const curLang = localStorage.getItem('bd_lang') || 'de';
+    setNum('bd_lang_count_' + curLang, getNum('bd_lang_count_' + curLang) + 1);
   } catch(e){}
 
   window.__bdTrackOrderClick = function(url){
@@ -1440,6 +1605,10 @@ const I18N = {
     else if(url.indexOf('ubereats') !== -1) key = 'bd_click_uber';
     if(key) setNum(key, getNum(key) + 1);
   };
+
+  document.querySelectorAll('a[href*="google.com/maps"]').forEach(a => {
+    a.addEventListener('click', () => setNum('bd_click_route', getNum('bd_click_route') + 1));
+  });
 })();
 
 
@@ -1467,7 +1636,7 @@ const I18N = {
 })();
 
 // ---- Master photo cycler: drives HERO + both wall frames from the SAME array ----
-(function(){
+function initMasterCycler(){
   if(!PHOTOS || !PHOTOS.length) return;
   // Menu-board photo is great for the full gallery grid but not as an atmospheric
   // rotating background (text-heavy, prices may not match the live menu).
@@ -1503,6 +1672,19 @@ const I18N = {
     setInterval(()=>{ f1Tick && f1Tick(); }, 7000);
     setInterval(()=>{ f2Tick && f2Tick(); }, 7000);
   }
+}
+
+// ---- Bootstrap: pull staff-added gallery photos from Supabase, THEN start the cyclers ----
+// (so newly uploaded photos from personal.html appear in the hero/gallery rotation too)
+(async function(){
+  try {
+    const extra = await safeGet('gallery_extra');
+    if(extra && Array.isArray(extra.items)){
+      extra.items.forEach(it => { if(it && it.dataUrl) PHOTOS.push(it.dataUrl); });
+    }
+  } catch(e){}
+  initGalleryLightbox();
+  initMasterCycler();
 })();
 
 // Spray underline draw (staggered on load, plus re-trigger on scroll into view)

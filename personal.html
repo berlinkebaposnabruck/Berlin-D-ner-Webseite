@@ -157,6 +157,42 @@ body{
 @media (max-width:700px){
   .stat-grid{grid-template-columns:repeat(2,1fr);}
 }
+
+/* ---------- TABS ---------- */
+.tab-bar{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:28px;
+  -webkit-overflow-scrolling:touch;
+}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab-btn{
+  background:var(--panel);border:1px solid var(--line);color:var(--muted);
+  padding:11px 18px;border-radius:20px;font-size:0.85rem;font-weight:700;
+  cursor:pointer;font-family:inherit;white-space:nowrap;transition:.2s;flex-shrink:0;
+}
+.tab-btn:hover{color:var(--chalk);}
+.tab-btn.active{background:var(--teal);border-color:var(--teal);color:var(--chalk);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ---------- GALLERY MANAGEMENT ---------- */
+.gal-admin-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px;margin:16px 0;}
+.gal-admin-tile{position:relative;border-radius:8px;overflow:hidden;aspect-ratio:1;background:var(--ink);}
+.gal-admin-tile img{width:100%;height:100%;object-fit:cover;display:block;}
+.gal-admin-del{
+  position:absolute;top:4px;right:4px;background:rgba(10,10,15,0.75);color:#ff9580;
+  border:none;border-radius:50%;width:26px;height:26px;font-size:1rem;line-height:1;cursor:pointer;
+}
+.gal-admin-del:hover{background:var(--red);color:#fff;}
+
+/* ---------- FAQ / STATS LISTS ---------- */
+.faq-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:0.88rem;}
+.faq-row:last-child{border-bottom:none;}
+.faq-row b{color:var(--amber);font-family:'Anton',sans-serif;}
+.unanswered-item{
+  background:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:12px 14px;margin-bottom:8px;font-size:0.88rem;
+}
+.unanswered-item .ua-meta{font-size:0.72rem;color:var(--muted);margin-top:4px;}
 </style>
 </head>
 <body>
@@ -172,7 +208,7 @@ body{
     <h1 class="login-title">Personal-Login</h1>
     <form id="loginForm">
       <label class="field-label" for="passInput">Passwort</label>
-      <input class="pass-input" type="password" id="passInput" inputmode="numeric" autocomplete="current-password" placeholder="••••" maxlength="8">
+      <input class="pass-input" type="password" id="passInput" autocomplete="current-password" placeholder="••••" maxlength="20">
       <button class="submit-btn" type="submit">Anmelden</button>
       <div class="login-msg" id="loginMsg"></div>
     </form>
@@ -189,114 +225,191 @@ body{
     <button class="logout-btn" id="logoutBtn">Abmelden</button>
   </div>
 
-  <div class="stat-grid">
-    <div class="stat-card">
-      <span class="stat-label">Seitenaufrufe</span>
-      <span class="stat-num" id="statViews">0</span>
-      <span class="stat-sub">auf diesem Gerät</span>
+  <div class="tab-bar" id="tabBar">
+    <button class="tab-btn active" type="button" data-tab="uebersicht">📊 Übersicht</button>
+    <button class="tab-btn" type="button" data-tab="speisekarte">📋 Speisekarte</button>
+    <button class="tab-btn" type="button" data-tab="fotos">🖼️ Fotos</button>
+    <button class="tab-btn" type="button" data-tab="nachrichten">✉️ Nachrichten</button>
+    <button class="tab-btn" type="button" data-tab="einstellungen">⚙️ Einstellungen</button>
+  </div>
+
+  <!-- ===================== TAB: ÜBERSICHT ===================== -->
+  <div class="tab-content active" data-tab-content="uebersicht">
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-label">Seitenaufrufe</span>
+        <span class="stat-num" id="statViews">0</span>
+        <span class="stat-sub">auf diesem Gerät</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Bestell-Klicks</span>
+        <span class="stat-num" id="statOrders">0</span>
+        <span class="stat-sub">Lieferando + Wolt + Uber Eats</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Google-Bewertung</span>
+        <span class="stat-num">4,5 ★</span>
+        <span class="stat-sub">1.179 Bewertungen</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Letzter Besuch</span>
+        <span class="stat-num" id="statLast" style="font-size:1rem;">—</span>
+        <span class="stat-sub">vorheriger Aufruf</span>
+      </div>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">Bestell-Klicks</span>
-      <span class="stat-num" id="statOrders">0</span>
-      <span class="stat-sub">Lieferando + Wolt + Uber Eats</span>
+
+    <div class="panel">
+      <h2>Bestellungen &amp; Route nach Klicks</h2>
+      <div class="bar-row">
+        <span class="bar-label">Lieferando</span>
+        <div class="bar-track"><div class="bar-fill" id="barLieferando" style="background:#FF8C00;"></div></div>
+        <span class="bar-val" id="valLieferando">0</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Wolt</span>
+        <div class="bar-track"><div class="bar-fill" id="barWolt" style="background:#00D4FF;"></div></div>
+        <span class="bar-val" id="valWolt">0</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Uber Eats</span>
+        <div class="bar-track"><div class="bar-fill" id="barUber" style="background:#00D26A;"></div></div>
+        <span class="bar-val" id="valUber">0</span>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Route</span>
+        <div class="bar-track"><div class="bar-fill" id="barRoute" style="background:#f2a93b;"></div></div>
+        <span class="bar-val" id="valRoute">0</span>
+      </div>
+      <p class="panel-note">Diese Zahlen zählen Klicks auf diesem Gerät seit der ersten Anmeldung — es ist keine echte geräteübergreifende Server-Analyse, da die Seite ohne eigenes Backend läuft.</p>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">Google-Bewertung</span>
-      <span class="stat-num">4,5 ★</span>
-      <span class="stat-sub">1.179 Bewertungen</span>
+
+    <div class="panel">
+      <h2>Besucher — Sprache &amp; Gerät</h2>
+      <div id="langStatsList"></div>
+      <div style="height:14px;"></div>
+      <div id="deviceStatsList"></div>
+      <p class="panel-note">Ebenfalls geräte-lokal gezählt (seit dem ersten Öffnen der Seite auf diesem Gerät).</p>
     </div>
-    <div class="stat-card">
-      <span class="stat-label">Letzter Besuch</span>
-      <span class="stat-num" id="statLast" style="font-size:1rem;">—</span>
-      <span class="stat-sub">vorheriger Aufruf</span>
+
+    <div class="panel">
+      <h2>🤖 Assistent — Meistgefragt</h2>
+      <div id="faqStatsList"></div>
+      <p class="panel-note" style="margin-top:14px;">Zählt, welche Themen Kunden im Chat-Assistenten am häufigsten ansprechen (auf diesem Gerät).</p>
+    </div>
+
+    <div class="panel">
+      <h2>🤔 Nicht verstandene Fragen</h2>
+      <div id="unansweredStatus" style="margin-bottom:12px;font-size:0.85rem;color:var(--muted);">Lade…</div>
+      <div id="unansweredList"></div>
+      <p class="panel-note">Diese Liste kommt — anders als die restliche Statistik oben — von <b>allen</b> Besuchern (über Supabase gespeichert), nicht nur von diesem Gerät.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Schnellzugriff</h2>
+      <div class="link-grid">
+        <a class="link-btn" href="index.html#menu">📋 Speisekarte ansehen</a>
+        <a class="link-btn" href="index.html#galerie">🖼️ Galerie ansehen</a>
+        <a class="link-btn" href="index.html#standort">📍 Standort &amp; Öffnungszeiten</a>
+        <button class="link-btn" type="button" id="resetStats">↺ Statistik zurücksetzen</button>
+      </div>
     </div>
   </div>
 
-  <div class="panel">
-    <h2>Bestellungen nach Plattform</h2>
-    <div class="bar-row">
-      <span class="bar-label">Lieferando</span>
-      <div class="bar-track"><div class="bar-fill" id="barLieferando" style="background:#FF8C00;"></div></div>
-      <span class="bar-val" id="valLieferando">0</span>
+  <!-- ===================== TAB: SPEISEKARTE ===================== -->
+  <div class="tab-content" data-tab-content="speisekarte">
+    <div class="panel" id="menuPanel">
+      <h2>Speisekarte verwalten</h2>
+      <p class="panel-note" style="margin-top:0;">✅ Änderungen hier werden nach dem Speichern für <b>alle Besucher</b> der Website live sichtbar — nicht nur auf diesem Gerät.</p>
+      <div id="menuStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade aktuelle Speisekarte…</div>
+      <div id="menuItemsList"></div>
+
+      <h3 style="margin-top:30px;font-family:'Anton',sans-serif;font-size:1rem;color:var(--teal-hi);letter-spacing:0.4px;">Neues Produkt hinzufügen</h3>
+      <div class="menu-form">
+        <select id="newItemCategory" class="menu-input">
+          <option value="Taschen">Taschen</option>
+          <option value="Klassiker & Extras">Klassiker &amp; Extras</option>
+        </select>
+        <input type="text" id="newItemName" class="menu-input" placeholder="Name (z. B. Falafel Tasche)">
+        <input type="text" id="newItemNote" class="menu-input" placeholder="Zusatz-Info (optional)">
+        <input type="number" id="newItemPrice" class="menu-input" placeholder="Preis in € (z. B. 8.50)" step="0.10" min="0">
+        <label class="menu-input" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+          <span id="newItemPhotoLabel">📷 Foto hinzufügen (optional)</span>
+          <input type="file" id="newItemPhoto" accept="image/*" style="display:none;">
+        </label>
+        <button type="button" id="addItemBtn" class="submit-btn" style="margin-top:6px;">+ Zur Liste hinzufügen</button>
+      </div>
+
+      <button type="button" id="saveMenuBtn" class="submit-btn" style="margin-top:26px;background:var(--red);width:100%;">💾 Speichern &amp; für alle Kunden veröffentlichen</button>
+      <div id="saveMenuMsg" style="margin-top:12px;font-size:0.85rem;"></div>
     </div>
-    <div class="bar-row">
-      <span class="bar-label">Wolt</span>
-      <div class="bar-track"><div class="bar-fill" id="barWolt" style="background:#00D4FF;"></div></div>
-      <span class="bar-val" id="valWolt">0</span>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">Uber Eats</span>
-      <div class="bar-track"><div class="bar-fill" id="barUber" style="background:#00D26A;"></div></div>
-      <span class="bar-val" id="valUber">0</span>
-    </div>
-    <p class="panel-note">Diese Zahlen zählen Klicks auf diesem Gerät seit der ersten Anmeldung — es ist keine echte Server-Analyse, da die Seite ohne eigenes Backend läuft. Für vollständige, geräteübergreifende Statistiken braucht es eine echte Analytics-Anbindung (z. B. Google Analytics) oder die Statistiken direkt bei Lieferando/Wolt/Uber Eats.</p>
   </div>
 
-  <div class="panel">
-    <h2>Schnellzugriff</h2>
-    <div class="link-grid">
-      <a class="link-btn" href="index.html#menu">📋 Speisekarte ansehen</a>
-      <a class="link-btn" href="index.html#galerie">🖼️ Galerie ansehen</a>
-      <a class="link-btn" href="index.html#standort">📍 Standort &amp; Öffnungszeiten</a>
-      <button class="link-btn" type="button" id="resetStats">↺ Statistik zurücksetzen</button>
-    </div>
-  </div>
+  <!-- ===================== TAB: FOTOS ===================== -->
+  <div class="tab-content" data-tab-content="fotos">
+    <div class="panel" id="galleryPanel">
+      <h2>Galerie verwalten</h2>
+      <p class="panel-note" style="margin-top:0;">✅ Hier hinzugefügte Fotos erscheinen zusätzlich zu den 56 festen Laden-Fotos in der Startseiten-Diashow und der Galerie — für <b>alle Besucher</b> der Website.</p>
+      <div id="galleryStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade Galerie…</div>
+      <div class="gal-admin-grid" id="galleryAdminGrid"></div>
 
-  <div class="panel" id="menuPanel">
-    <h2>Speisekarte verwalten</h2>
-    <p class="panel-note" style="margin-top:0;">✅ Änderungen hier werden nach dem Speichern für <b>alle Besucher</b> der Website live sichtbar — nicht nur auf diesem Gerät.</p>
-    <div id="menuStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade aktuelle Speisekarte…</div>
-    <div id="menuItemsList"></div>
-
-    <h3 style="margin-top:30px;font-family:'Anton',sans-serif;font-size:1rem;color:var(--teal-hi);letter-spacing:0.4px;">Neues Produkt hinzufügen</h3>
-    <div class="menu-form">
-      <select id="newItemCategory" class="menu-input">
-        <option value="Taschen">Taschen</option>
-        <option value="Klassiker & Extras">Klassiker &amp; Extras</option>
-      </select>
-      <input type="text" id="newItemName" class="menu-input" placeholder="Name (z. B. Falafel Tasche)">
-      <input type="text" id="newItemNote" class="menu-input" placeholder="Zusatz-Info (optional)">
-      <input type="number" id="newItemPrice" class="menu-input" placeholder="Preis in € (z. B. 8.50)" step="0.10" min="0">
+      <h3 style="margin-top:22px;font-family:'Anton',sans-serif;font-size:1rem;color:var(--teal-hi);letter-spacing:0.4px;">Neues Foto hinzufügen</h3>
       <label class="menu-input" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-        <span id="newItemPhotoLabel">📷 Foto hinzufügen (optional)</span>
-        <input type="file" id="newItemPhoto" accept="image/*" style="display:none;">
+        <span id="galleryPhotoLabel">📷 Foto auswählen</span>
+        <input type="file" id="galleryPhotoInput" accept="image/*" style="display:none;">
       </label>
-      <button type="button" id="addItemBtn" class="submit-btn" style="margin-top:6px;">+ Zur Liste hinzufügen</button>
+      <button type="button" id="galleryAddBtn" class="submit-btn" style="margin-top:10px;background:var(--red);">💾 Hinzufügen &amp; veröffentlichen</button>
+      <div id="galleryMsg" style="margin-top:12px;font-size:0.85rem;"></div>
+    </div>
+  </div>
+
+  <!-- ===================== TAB: NACHRICHTEN ===================== -->
+  <div class="tab-content" data-tab-content="nachrichten">
+    <div class="panel" id="messagesPanel">
+      <h2>Nachrichten von Kunden</h2>
+      <div id="messagesStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade Nachrichten…</div>
+      <div id="messagesList"></div>
+    </div>
+  </div>
+
+  <!-- ===================== TAB: EINSTELLUNGEN ===================== -->
+  <div class="tab-content" data-tab-content="einstellungen">
+    <div class="panel" id="hoursPanel">
+      <h2>Öffnungszeiten verwalten</h2>
+      <p class="panel-note" style="margin-top:0;">✅ Änderungen werden nach dem Speichern für alle Besucher auf der Website live sichtbar — inklusive der Ampel-Anzeige (offen/geschlossen) oben auf der Seite.</p>
+      <label class="field-label" style="text-align:left;">Mo – Do</label>
+      <input type="text" id="hMoDo" class="menu-input" placeholder="z. B. 11:00 – 23:00">
+      <label class="field-label" style="text-align:left;">Fr – Sa</label>
+      <input type="text" id="hFrSa" class="menu-input" placeholder="z. B. 11:00 – 05:00">
+      <label class="field-label" style="text-align:left;">So</label>
+      <input type="text" id="hSo" class="menu-input" placeholder="z. B. 11:00 – 23:00">
+      <button type="button" id="saveHoursBtn" class="submit-btn" style="margin-top:10px;background:var(--red);">💾 Öffnungszeiten speichern</button>
+      <div id="saveHoursMsg" style="margin-top:12px;font-size:0.85rem;"></div>
     </div>
 
-    <button type="button" id="saveMenuBtn" class="submit-btn" style="margin-top:26px;background:var(--red);width:100%;">💾 Speichern &amp; für alle Kunden veröffentlichen</button>
-    <div id="saveMenuMsg" style="margin-top:12px;font-size:0.85rem;"></div>
-  </div>
+    <div class="panel" id="announcePanel">
+      <h2>Kunden informieren</h2>
+      <p class="panel-note" style="margin-top:0;">Für Events, Sonderöffnungszeiten, kurzfristige Schließung usw. — erscheint als Banner ganz oben auf der Website.</p>
+      <textarea id="announceText" class="menu-input" rows="3" placeholder="z. B. 🎉 Am Samstag wegen Stadtfest bis 02:00 Uhr geöffnet!"></textarea>
+      <label style="display:flex;align-items:center;gap:10px;margin:10px 0 16px;font-size:0.88rem;cursor:pointer;">
+        <input type="checkbox" id="announceActive" style="width:18px;height:18px;">
+        Banner auf der Website anzeigen
+      </label>
+      <button type="button" id="saveAnnounceBtn" class="submit-btn" style="background:var(--red);">💾 Ankündigung veröffentlichen</button>
+      <div id="saveAnnounceMsg" style="margin-top:12px;font-size:0.85rem;"></div>
+    </div>
 
-  <div class="panel" id="hoursPanel">
-    <h2>Öffnungszeiten verwalten</h2>
-    <p class="panel-note" style="margin-top:0;">✅ Änderungen werden nach dem Speichern für alle Besucher auf der Website live sichtbar.</p>
-    <label class="field-label" style="text-align:left;">Mo – Do</label>
-    <input type="text" id="hMoDo" class="menu-input" placeholder="z. B. 11:00 – 23:00">
-    <label class="field-label" style="text-align:left;">Fr – Sa</label>
-    <input type="text" id="hFrSa" class="menu-input" placeholder="z. B. 11:00 – 05:00">
-    <label class="field-label" style="text-align:left;">So</label>
-    <input type="text" id="hSo" class="menu-input" placeholder="z. B. 11:00 – 23:00">
-    <button type="button" id="saveHoursBtn" class="submit-btn" style="margin-top:10px;background:var(--red);">💾 Öffnungszeiten speichern</button>
-    <div id="saveHoursMsg" style="margin-top:12px;font-size:0.85rem;"></div>
-  </div>
-
-  <div class="panel" id="announcePanel">
-    <h2>Kunden informieren</h2>
-    <p class="panel-note" style="margin-top:0;">Für Events, Sonderöffnungszeiten, kurzfristige Schließung usw. — erscheint als Banner ganz oben auf der Website.</p>
-    <textarea id="announceText" class="menu-input" rows="3" placeholder="z. B. 🎉 Am Samstag wegen Stadtfest bis 02:00 Uhr geöffnet!"></textarea>
-    <label style="display:flex;align-items:center;gap:10px;margin:10px 0 16px;font-size:0.88rem;cursor:pointer;">
-      <input type="checkbox" id="announceActive" style="width:18px;height:18px;">
-      Banner auf der Website anzeigen
-    </label>
-    <button type="button" id="saveAnnounceBtn" class="submit-btn" style="background:var(--red);">💾 Ankündigung veröffentlichen</button>
-    <div id="saveAnnounceMsg" style="margin-top:12px;font-size:0.85rem;"></div>
-  </div>
-
-  <div class="panel" id="messagesPanel">
-    <h2>Nachrichten von Kunden</h2>
-    <div id="messagesStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade Nachrichten…</div>
-    <div id="messagesList"></div>
+    <div class="panel" id="passwordPanel">
+      <h2>🔒 Passwort ändern</h2>
+      <p class="panel-note" style="margin-top:0;">Gilt für alle Mitarbeiter, die sich hier im Personal-Bereich anmelden.</p>
+      <label class="field-label" style="text-align:left;">Aktuelles Passwort</label>
+      <input type="password" id="pwCurrent" class="menu-input" autocomplete="current-password" maxlength="20">
+      <label class="field-label" style="text-align:left;">Neues Passwort</label>
+      <input type="password" id="pwNew" class="menu-input" autocomplete="new-password" maxlength="20">
+      <label class="field-label" style="text-align:left;">Neues Passwort bestätigen</label>
+      <input type="password" id="pwConfirm" class="menu-input" autocomplete="new-password" maxlength="20">
+      <button type="button" id="savePasswordBtn" class="submit-btn" style="margin-top:10px;background:var(--red);">💾 Passwort speichern</button>
+      <div id="savePasswordMsg" style="margin-top:12px;font-size:0.85rem;"></div>
+    </div>
   </div>
 </div>
 
@@ -370,7 +483,23 @@ async function safeListPrefix(prefix, limit = 100) {
   }
 })();
 
-const PASSWORD = '0021';
+let CURRENT_PASSWORD = '0021'; // fallback default until Supabase value (if any) loads
+safeGet('staff_password').then(v => {
+  if(v && typeof v.value === 'string' && v.value.length) CURRENT_PASSWORD = v.value;
+});
+
+// ---- Tab switching ----
+(function(){
+  const buttons = document.querySelectorAll('.tab-btn');
+  const contents = document.querySelectorAll('.tab-content');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.getAttribute('data-tab');
+      buttons.forEach(b => b.classList.toggle('active', b === btn));
+      contents.forEach(c => c.classList.toggle('active', c.getAttribute('data-tab-content') === target));
+    });
+  });
+})();
 
 function getNum(key){
   try { return parseInt(localStorage.getItem(key) || '0', 10) || 0; } catch(e){ return 0; }
@@ -387,13 +516,22 @@ const loginMsg = document.getElementById('loginMsg');
 const logoutBtn = document.getElementById('logoutBtn');
 const resetBtn = document.getElementById('resetStats');
 
+const FAQ_LABELS = {
+  hours: 'Öffnungszeiten', address: 'Adresse / Parken', delivery: 'Lieferung',
+  menu: 'Speisekarte', halal: 'Helal', veggie: 'Vegetarisch / Vegan',
+  payment: 'Zahlung', catering: 'Catering / Events', jobs: 'Jobs',
+  contact: 'Kontakt', greeting: 'Begrüßung', unmatched: 'Nicht verstanden',
+};
+const LANG_LABELS = { de: '🇩🇪 Deutsch', en: '🇬🇧 English', tr: '🇹🇷 Türkçe', ro: '🇷🇴 Română' };
+
 function renderDashboard(){
   const views = getNum('bd_pageviews');
   const lief = getNum('bd_click_lieferando');
   const wolt = getNum('bd_click_wolt');
   const uber = getNum('bd_click_uber');
+  const route = getNum('bd_click_route');
   const total = lief + wolt + uber;
-  const maxVal = Math.max(lief, wolt, uber, 1);
+  const maxVal = Math.max(lief, wolt, uber, route, 1);
 
   document.getElementById('statViews').textContent = views;
   document.getElementById('statOrders').textContent = total;
@@ -404,10 +542,208 @@ function renderDashboard(){
   document.getElementById('valLieferando').textContent = lief;
   document.getElementById('valWolt').textContent = wolt;
   document.getElementById('valUber').textContent = uber;
+  document.getElementById('valRoute').textContent = route;
   document.getElementById('barLieferando').style.width = (lief/maxVal*100)+'%';
   document.getElementById('barWolt').style.width = (wolt/maxVal*100)+'%';
   document.getElementById('barUber').style.width = (uber/maxVal*100)+'%';
+  document.getElementById('barRoute').style.width = (route/maxVal*100)+'%';
+
+  // Language breakdown
+  const langEl = document.getElementById('langStatsList');
+  if(langEl){
+    langEl.innerHTML = '';
+    Object.keys(LANG_LABELS).forEach(code => {
+      const n = getNum('bd_lang_count_' + code);
+      if(n <= 0) return;
+      const row = document.createElement('div');
+      row.className = 'faq-row';
+      row.innerHTML = `<span>${LANG_LABELS[code]}</span><b>${n}</b>`;
+      langEl.appendChild(row);
+    });
+    if(!langEl.children.length) langEl.innerHTML = '<p class="panel-note" style="margin:0;">Noch keine Daten.</p>';
+  }
+
+  // Device breakdown
+  const devEl = document.getElementById('deviceStatsList');
+  if(devEl){
+    const mob = getNum('bd_device_mobile');
+    const desk = getNum('bd_device_desktop');
+    devEl.innerHTML = '';
+    if(mob > 0){ const r=document.createElement('div'); r.className='faq-row'; r.innerHTML=`<span>📱 Mobil</span><b>${mob}</b>`; devEl.appendChild(r); }
+    if(desk > 0){ const r=document.createElement('div'); r.className='faq-row'; r.innerHTML=`<span>💻 Desktop</span><b>${desk}</b>`; devEl.appendChild(r); }
+    if(!devEl.children.length) devEl.innerHTML = '<p class="panel-note" style="margin:0;">Noch keine Daten.</p>';
+  }
+
+  // FAQ breakdown (most asked to the chat assistant)
+  const faqEl = document.getElementById('faqStatsList');
+  if(faqEl){
+    const rows = Object.keys(FAQ_LABELS)
+      .map(key => ({ key, label: FAQ_LABELS[key], n: getNum('bd_faq_' + key) }))
+      .filter(r => r.n > 0)
+      .sort((a,b) => b.n - a.n)
+      .slice(0, 8);
+    faqEl.innerHTML = '';
+    rows.forEach(r => {
+      const row = document.createElement('div');
+      row.className = 'faq-row';
+      row.innerHTML = `<span>${r.label}</span><b>${r.n}</b>`;
+      faqEl.appendChild(row);
+    });
+    if(!rows.length) faqEl.innerHTML = '<p class="panel-note" style="margin:0;">Noch keine Chat-Anfragen auf diesem Gerät erfasst.</p>';
+  }
 }
+
+// ---- Unanswered chatbot questions (cross-device, from Supabase) ----
+(function(){
+  const statusEl = document.getElementById('unansweredStatus');
+  const listEl = document.getElementById('unansweredList');
+  if(!listEl) return;
+  safeListPrefix('unanswered:', 20).then(rows => {
+    if(!rows.length){
+      statusEl.textContent = 'Noch keine unbeantworteten Fragen.';
+      return;
+    }
+    statusEl.textContent = rows.length + ' Frage(n)';
+    rows.forEach(row => {
+      const item = row.value || {};
+      const div = document.createElement('div');
+      div.className = 'unanswered-item';
+      const date = item.ts ? new Date(item.ts).toLocaleString('de-DE') : (row.updated_at ? new Date(row.updated_at).toLocaleString('de-DE') : '');
+      div.innerHTML = `<div>"${(item.question || '').replace(/</g,'&lt;')}"</div><div class="ua-meta">${date}</div>`;
+      listEl.appendChild(div);
+    });
+  });
+})();
+
+// ---- Gallery management (extra photos on top of the 56 fixed shop photos) ----
+(function(){
+  const gridEl = document.getElementById('galleryAdminGrid');
+  const statusEl = document.getElementById('galleryStatus');
+  const fileInput = document.getElementById('galleryPhotoInput');
+  const fileLabel = document.getElementById('galleryPhotoLabel');
+  const addBtn = document.getElementById('galleryAddBtn');
+  const msgEl = document.getElementById('galleryMsg');
+  if(!gridEl) return;
+
+  let items = [];
+
+  function renderGrid(){
+    gridEl.innerHTML = '';
+    items.forEach(item => {
+      const tile = document.createElement('div');
+      tile.className = 'gal-admin-tile';
+      const img = document.createElement('img');
+      img.src = item.dataUrl;
+      tile.appendChild(img);
+      const del = document.createElement('button');
+      del.type = 'button';
+      del.className = 'gal-admin-del';
+      del.innerHTML = '&times;';
+      del.title = 'Löschen';
+      del.addEventListener('click', () => {
+        items = items.filter(i => i.id !== item.id);
+        renderGrid();
+        persist('Gelöscht — bitte kurz warten …');
+      });
+      tile.appendChild(del);
+      gridEl.appendChild(tile);
+    });
+    if(!items.length){
+      gridEl.innerHTML = '<p class="panel-note" style="margin:0;">Noch keine zusätzlichen Fotos hinzugefügt.</p>';
+    }
+  }
+
+  function persist(pendingMsg){
+    if(pendingMsg){ msgEl.textContent = pendingMsg; msgEl.style.color = 'var(--muted)'; }
+    return safeSet('gallery_extra', { items }).then(ok => {
+      msgEl.textContent = ok ? '✅ Gespeichert! Für alle Besucher live.' : '❌ Fehler beim Speichern.';
+      msgEl.style.color = ok ? '#7fd8d3' : '#ffb3a0';
+      return ok;
+    });
+  }
+
+  function resizePhoto(file, callback){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 900;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        callback(canvas.toDataURL('image/jpeg', 0.78));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  safeGet('gallery_extra').then(v => {
+    if(v && Array.isArray(v.items)) items = v.items;
+    statusEl.textContent = items.length ? (items.length + ' zusätzliche(s) Foto(s) geladen.') : 'Noch keine zusätzlichen Fotos.';
+    renderGrid();
+  });
+
+  fileInput.addEventListener('change', () => {
+    if(fileInput.files && fileInput.files[0]) fileLabel.textContent = '✅ ' + fileInput.files[0].name;
+  });
+
+  addBtn.addEventListener('click', () => {
+    if(!fileInput.files || !fileInput.files[0]){
+      alert('Bitte zuerst ein Foto auswählen.');
+      return;
+    }
+    resizePhoto(fileInput.files[0], (dataUrl) => {
+      items.push({ id: 'gal_' + Date.now(), dataUrl });
+      renderGrid();
+      fileInput.value = '';
+      fileLabel.textContent = '📷 Foto auswählen';
+      persist('Speichere …');
+    });
+  });
+})();
+
+// ---- Password change ----
+(function(){
+  const curEl = document.getElementById('pwCurrent');
+  const newEl = document.getElementById('pwNew');
+  const confirmEl = document.getElementById('pwConfirm');
+  const saveBtn = document.getElementById('savePasswordBtn');
+  const msgEl = document.getElementById('savePasswordMsg');
+  if(!saveBtn) return;
+
+  saveBtn.addEventListener('click', () => {
+    msgEl.style.color = '#ffb3a0';
+    if(curEl.value !== CURRENT_PASSWORD){
+      msgEl.textContent = '❌ Aktuelles Passwort ist falsch.';
+      return;
+    }
+    if(newEl.value.length < 4){
+      msgEl.textContent = '❌ Neues Passwort muss mindestens 4 Zeichen haben.';
+      return;
+    }
+    if(newEl.value !== confirmEl.value){
+      msgEl.textContent = '❌ Die neuen Passwörter stimmen nicht überein.';
+      return;
+    }
+    msgEl.style.color = 'var(--muted)';
+    msgEl.textContent = 'Speichere …';
+    safeSet('staff_password', newEl.value).then(ok => {
+      if(ok){
+        CURRENT_PASSWORD = newEl.value;
+        msgEl.style.color = '#7fd8d3';
+        msgEl.textContent = '✅ Passwort geändert.';
+        curEl.value = ''; newEl.value = ''; confirmEl.value = '';
+      } else {
+        msgEl.style.color = '#ffb3a0';
+        msgEl.textContent = '❌ Konnte nicht gespeichert werden. Internetverbindung prüfen.';
+      }
+    });
+  });
+})();
 
 function showDashboard(){
   loginScreen.style.display = 'none';
@@ -428,7 +764,7 @@ if (alreadyIn) showDashboard();
 loginForm.addEventListener('submit', (e)=>{
   e.preventDefault();
   loginMsg.classList.remove('show','ok','err');
-  if(passInput.value === PASSWORD){
+  if(passInput.value === CURRENT_PASSWORD){
     try { localStorage.setItem('bd_staff_logged_in','1'); } catch(e){}
     loginMsg.textContent = 'Willkommen zurück! Dienstplan wird geladen …';
     loginMsg.classList.add('show','ok');
@@ -445,7 +781,11 @@ logoutBtn.addEventListener('click', ()=>{
 });
 
 resetBtn.addEventListener('click', ()=>{
-  ['bd_click_lieferando','bd_click_wolt','bd_click_uber','bd_pageviews'].forEach(k=>setNum(k,0));
+  const keys = ['bd_click_lieferando','bd_click_wolt','bd_click_uber','bd_click_route','bd_pageviews',
+    'bd_device_mobile','bd_device_desktop'];
+  Object.keys(LANG_LABELS).forEach(code => keys.push('bd_lang_count_' + code));
+  Object.keys(FAQ_LABELS).forEach(key => keys.push('bd_faq_' + key));
+  keys.forEach(k => setNum(k, 0));
   renderDashboard();
 });
 
