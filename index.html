@@ -85,6 +85,7 @@ header.nav{
   display:flex;align-items:center;justify-content:space-between;
   position:relative;gap:14px;
 }
+.nav-left{display:flex;align-items:center;gap:16px;}
 .nav-brand{
   font-family:'Anton',sans-serif;
   font-size:1.25rem;
@@ -101,7 +102,7 @@ header.nav{
 .nav-order-full{display:none;}
 .nav-order-full .dd-btn{padding:9px 14px;font-size:0.74rem;}
 .nav-order-compact{display:block;}
-.nav-toggle{display:none;background:none;border:none;color:var(--chalk);font-size:1.6rem;cursor:pointer;line-height:1;padding:4px 6px;}
+.nav-toggle{display:none;background:none;border:none;color:var(--chalk);font-size:2.2rem;cursor:pointer;line-height:1;padding:4px 6px;}
 .lang-trigger{position:relative;}
 .lang-trigger-btn{
   background:var(--panel);border:1px solid var(--line);color:var(--chalk);
@@ -192,7 +193,7 @@ header.nav{
   .order-trigger-btn{padding:8px 10px;font-size:0.68rem;}
   .lang-trigger-btn{padding:7px 8px;font-size:0.85rem;gap:3px;}
   .lang-trigger-btn .caret{display:none;}
-  .nav-toggle{font-size:1.3rem;padding:2px 4px;}
+  .nav-toggle{font-size:2rem;padding:2px 4px;}
   .order-dropdown{right:0;left:auto;min-width:190px;}
 }
 
@@ -369,59 +370,6 @@ section{padding:100px 0;position:relative;}
 .g4{grid-column:span 2;grid-row:span 2;}
 .g5{grid-column:span 2;grid-row:span 2;}
 
-.gal-full-grid{
-  display:grid;grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
-  gap:8px;
-}
-.gal-full-grid img{
-  width:100%;height:150px;object-fit:cover;object-position:center 20%;
-  border-radius:4px;cursor:pointer;transition:transform .25s ease, filter .25s ease;
-  filter:grayscale(0.15) saturate(1.05);
-}
-.gal-full-grid img:hover{transform:scale(1.05);filter:saturate(1.25);}
-
-.gal-rotator{
-  display:grid;grid-template-columns:repeat(5, 1fr);gap:10px;
-}
-.gal-rotator-slot{
-  position:relative;height:190px;border-radius:6px;overflow:hidden;
-  background:var(--panel);cursor:pointer;
-}
-.gal-rotator-slot img{
-  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 20%;
-  opacity:0;transition:opacity 1s ease, transform .3s ease;
-  filter:grayscale(0.15) saturate(1.05);
-}
-.gal-rotator-slot img.active{opacity:1;}
-.gal-rotator-slot:hover img.active{transform:scale(1.06);}
-@media (max-width:900px){
-  .gal-rotator{grid-template-columns:repeat(3, 1fr);}
-  .gal-rotator-slot:nth-child(n+4){display:none;}
-}
-@media (max-width:560px){
-  .gal-rotator{grid-template-columns:repeat(2, 1fr);}
-  .gal-rotator-slot{height:150px;}
-}
-
-.lightbox{
-  position:fixed;inset:0;background:rgba(5,5,8,0.94);z-index:1000;
-  display:none;align-items:center;justify-content:center;
-}
-.lightbox.open{display:flex;}
-.lightbox img{max-width:88vw;max-height:82vh;border-radius:6px;box-shadow:0 30px 70px rgba(0,0,0,0.6);}
-.lb-close{
-  position:absolute;top:22px;right:28px;background:none;border:none;color:var(--chalk);
-  font-size:2.2rem;cursor:pointer;line-height:1;
-}
-.lb-nav{
-  position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.08);
-  border:none;color:var(--chalk);font-size:2.4rem;width:56px;height:56px;border-radius:50%;
-  cursor:pointer;transition:.2s;
-}
-.lb-nav:hover{background:rgba(255,255,255,0.18);}
-.lb-prev{left:16px;}
-.lb-next{right:16px;}
-
 .staff-modal{
   position:fixed;inset:0;background:rgba(5,5,8,0.85);z-index:1100;
   display:none;align-items:center;justify-content:center;padding:20px;
@@ -557,7 +505,20 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
 
 <header class="nav">
   <div class="nav-inner">
-    <div class="nav-brand"><img class="nav-logo-img" src="images/logo.jpg" alt="Berlin Döner Logo">BERLIN <span>DÖNER</span></div>
+    <div class="nav-left">
+      <div class="nav-brand"><img class="nav-logo-img" src="images/logo.jpg" alt="Berlin Döner Logo">BERLIN <span>DÖNER</span></div>
+      <div class="lang-trigger">
+        <button class="lang-trigger-btn" id="langToggle" type="button" aria-expanded="false">
+          <span id="langFlag">🇩🇪</span><span class="caret">▾</span>
+        </button>
+        <div class="lang-dropdown" id="langDropdown">
+          <button class="lang-opt" type="button" data-lang="de">🇩🇪 Deutsch</button>
+          <button class="lang-opt" type="button" data-lang="en">🇬🇧 English</button>
+          <button class="lang-opt" type="button" data-lang="tr">🇹🇷 Türkçe</button>
+          <button class="lang-opt" type="button" data-lang="ro">🇷🇴 Română</button>
+        </div>
+      </div>
+    </div>
     <nav class="nav-links">
       <a href="#story" data-i18n="navAbout">Über uns</a>
       <a href="#menu" data-i18n="navMenu">Speisekarte</a>
@@ -581,17 +542,6 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
         </div>
       </div>
       <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
-      <div class="lang-trigger">
-        <button class="lang-trigger-btn" id="langToggle" type="button" aria-expanded="false">
-          <span id="langFlag">🇩🇪</span><span class="caret">▾</span>
-        </button>
-        <div class="lang-dropdown" id="langDropdown">
-          <button class="lang-opt" type="button" data-lang="de">🇩🇪 Deutsch</button>
-          <button class="lang-opt" type="button" data-lang="en">🇬🇧 English</button>
-          <button class="lang-opt" type="button" data-lang="tr">🇹🇷 Türkçe</button>
-          <button class="lang-opt" type="button" data-lang="ro">🇷🇴 Română</button>
-        </div>
-      </div>
     </div>
   </div>
 </header>
@@ -746,22 +696,8 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
       <figure class="g4" data-label="Knusprig"><img src="images/gal_fries.jpg" alt="Frisch frittierte Pommes"></figure>
       <figure class="g5" data-label="An der Theke"><img src="images/gal_counter.jpg" alt="Döner wird an der Theke belegt"></figure>
     </div>
-
-    <div class="section-head" style="margin-top:60px;">
-      <div class="eyebrow">Mehr aus unserer Küche</div>
-      <h2 style="font-size:1.8rem;">Alle Eindrücke.</h2>
-      <p style="color:var(--muted);margin-top:8px;">Ein kleiner Ausschnitt — die Bilder wechseln von selbst. Zum Vergrößern antippen.</p>
-    </div>
-    <div class="gal-rotator" id="galRotator"></div>
   </div>
 </section>
-
-<div class="lightbox" id="lightbox">
-  <button class="lb-close" id="lbClose" type="button" aria-label="Schließen">&times;</button>
-  <button class="lb-nav lb-prev" id="lbPrev" type="button" aria-label="Vorheriges Bild">&#8249;</button>
-  <img id="lbImg" src="" alt="">
-  <button class="lb-nav lb-next" id="lbNext" type="button" aria-label="Nächstes Bild">&#8250;</button>
-</div>
 
 <div class="staff-modal" id="staffModal">
   <div class="staff-modal-inner">
@@ -909,82 +845,6 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
   document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape' && modal.classList.contains('open')) closeStaffModal();
   });
-})();
-
-// ---- Rotating gallery (5 slots on screen, cycling through ALL photos) + lightbox ----
-(function(){
-  const rotator = document.getElementById('galRotator');
-  const lightbox = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lbImg');
-  if(!rotator) return;
-
-  const SLOT_COUNT = 5;
-  const CYCLE_MS = 3200;
-  let slots = []; // { el, img, index }
-  let currentIndex = 0;
-
-  function buildRotator(){
-    rotator.innerHTML = '';
-    slots = [];
-    for(let s = 0; s < SLOT_COUNT; s++){
-      const slot = document.createElement('div');
-      slot.className = 'gal-rotator-slot';
-      const startIndex = Math.floor((PHOTOS.length / SLOT_COUNT) * s);
-
-      const img = document.createElement('img');
-      img.src = PHOTOS[startIndex];
-      img.className = 'active';
-      img.alt = 'Berlin Döner Osnabrück — Impression';
-      slot.appendChild(img);
-
-      const slotData = { el: slot, img: img, index: startIndex };
-      slot.addEventListener('click', () => openLightbox(slotData.index));
-      rotator.appendChild(slot);
-      slots.push(slotData);
-    }
-  }
-
-  function tickSlot(slotData){
-    const nextIndex = (slotData.index + SLOT_COUNT) % PHOTOS.length;
-    slotData.img.style.opacity = '0';
-    setTimeout(() => {
-      slotData.img.src = PHOTOS[nextIndex];
-      slotData.index = nextIndex;
-      slotData.img.style.opacity = '1';
-    }, 500);
-  }
-
-  function openLightbox(i){
-    currentIndex = i;
-    lbImg.src = PHOTOS[i];
-    lightbox.classList.add('open');
-  }
-  function closeLightbox(){ lightbox.classList.remove('open'); }
-  function showNext(){ currentIndex = (currentIndex + 1) % PHOTOS.length; lbImg.src = PHOTOS[currentIndex]; }
-  function showPrev(){ currentIndex = (currentIndex - 1 + PHOTOS.length) % PHOTOS.length; lbImg.src = PHOTOS[currentIndex]; }
-
-  document.getElementById('lbClose').addEventListener('click', closeLightbox);
-  document.getElementById('lbNext').addEventListener('click', showNext);
-  document.getElementById('lbPrev').addEventListener('click', showPrev);
-  lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', (e) => {
-    if(!lightbox.classList.contains('open')) return;
-    if(e.key === 'Escape') closeLightbox();
-    if(e.key === 'ArrowRight') showNext();
-    if(e.key === 'ArrowLeft') showPrev();
-  });
-
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Defer to next tick so the PHOTOS const (declared further down in this script) is initialized
-  setTimeout(() => {
-    buildRotator();
-    if(!reduce){
-      slots.forEach((slotData, i) => {
-        setInterval(() => tickSlot(slotData), CYCLE_MS + i * 400);
-      });
-    }
-  }, 0);
 })();
 
 const PHOTOS = ["images/ph00.jpg", "images/ph01.jpg", "images/ph02.jpg", "images/ph03.jpg", "images/ph04.jpg", "images/ph05.jpg", "images/ph06.jpg", "images/ph07.jpg", "images/ph08.jpg", "images/ph09.jpg", "images/ph10.jpg", "images/ph11.jpg", "images/ph12.jpg", "images/ph13.jpg", "images/ph14.jpg", "images/ph15.jpg", "images/ph16.jpg", "images/ph17.jpg", "images/ph18.jpg", "images/ph19.jpg", "images/ph20.jpg", "images/ph21.jpg", "images/ph22.jpg", "images/ph23.jpg", "images/ph24.jpg", "images/ph25.jpg", "images/ph26.jpg", "images/ph27.jpg", "images/ph28.jpg", "images/ph29.jpg", "images/ph30.jpg", "images/ph31.jpg", "images/ph32.jpg", "images/ph33.jpg", "images/ph34.jpg", "images/ph35.jpg", "images/ph36.jpg", "images/ph37.jpg", "images/ph38.jpg", "images/ph39.jpg", "images/ph40.jpg", "images/ph41.jpg", "images/ph42.jpg", "images/ph43.jpg", "images/ph44.jpg", "images/ph45.jpg", "images/ph46.jpg", "images/ph47.jpg", "images/ph48.jpg", "images/ph49.jpg", "images/ph50.jpg", "images/ph51.jpg", "images/ph52.jpg", "images/ph53.jpg", "images/ph54.jpg", "images/ph55.jpg"];
