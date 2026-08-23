@@ -183,6 +183,17 @@ body{
   border:none;border-radius:50%;width:26px;height:26px;font-size:1rem;line-height:1;cursor:pointer;
 }
 .gal-admin-del:hover{background:var(--red);color:#fff;}
+.gal-admin-tile.hidden-photo{opacity:0.35;}
+.gal-admin-tile .gal-pos-select{
+  position:absolute;bottom:0;left:0;right:0;
+  background:rgba(10,10,15,0.85);color:var(--chalk);border:none;
+  font-size:0.62rem;padding:3px 2px;font-family:inherit;text-align:center;
+}
+.gal-admin-tile .gal-hide-toggle{
+  position:absolute;top:4px;left:4px;background:rgba(10,10,15,0.75);color:var(--chalk);
+  border:none;border-radius:50%;width:26px;height:26px;font-size:0.85rem;line-height:1;cursor:pointer;
+}
+.gal-admin-tile .gal-hide-toggle.is-hidden{color:#ff9580;}
 
 /* ---------- FAQ / STATS LISTS ---------- */
 .faq-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line);font-size:0.88rem;}
@@ -208,7 +219,7 @@ body{
     <h1 class="login-title">Personal-Login</h1>
     <form id="loginForm">
       <label class="field-label" for="passInput">Passwort</label>
-      <input class="pass-input" type="password" id="passInput" autocomplete="current-password" placeholder="••••" maxlength="20">
+      <input class="pass-input" type="password" id="passInput" inputmode="numeric" autocomplete="current-password" placeholder="••••" maxlength="20">
       <button class="submit-btn" type="submit">Anmelden</button>
       <div class="login-msg" id="loginMsg"></div>
     </form>
@@ -347,8 +358,16 @@ body{
   <!-- ===================== TAB: FOTOS ===================== -->
   <div class="tab-content" data-tab-content="fotos">
     <div class="panel" id="galleryPanel">
-      <h2>Galerie verwalten</h2>
-      <p class="panel-note" style="margin-top:0;">✅ Hier hinzugefügte Fotos erscheinen zusätzlich zu den 56 festen Laden-Fotos in der Startseiten-Diashow und der Galerie — für <b>alle Besucher</b> der Website.</p>
+      <h2>Laden-Fotos (die 56 festen Fotos)</h2>
+      <p class="panel-note" style="margin-top:0;">Diese Fotos liegen als echte Dateien im Projekt. Du kannst sie nicht löschen, aber <b>ausblenden</b> (erscheinen dann nirgends mehr auf der Website) und ihre <b>Bildausschnitt-Position</b> einstellen, falls ein Foto ungünstig zugeschnitten wirkt.</p>
+      <div id="systemPhotosStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade Fotos…</div>
+      <div class="gal-admin-grid" id="systemPhotosGrid"></div>
+      <div id="systemPhotosMsg" style="margin-top:12px;font-size:0.85rem;"></div>
+    </div>
+
+    <div class="panel" id="galleryExtraPanel">
+      <h2>Zusätzliche Fotos</h2>
+      <p class="panel-note" style="margin-top:0;">✅ Hier hinzugefügte Fotos erscheinen zusätzlich zu den 56 festen Laden-Fotos in der Startseiten-Diashow und der Galerie — für <b>alle Besucher</b> der Website. Diese können jederzeit vollständig gelöscht werden.</p>
       <div id="galleryStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade Galerie…</div>
       <div class="gal-admin-grid" id="galleryAdminGrid"></div>
 
@@ -402,11 +421,11 @@ body{
       <h2>🔒 Passwort ändern</h2>
       <p class="panel-note" style="margin-top:0;">Gilt für alle Mitarbeiter, die sich hier im Personal-Bereich anmelden.</p>
       <label class="field-label" style="text-align:left;">Aktuelles Passwort</label>
-      <input type="password" id="pwCurrent" class="menu-input" autocomplete="current-password" maxlength="20">
+      <input type="password" id="pwCurrent" class="menu-input" inputmode="numeric" autocomplete="current-password" maxlength="20">
       <label class="field-label" style="text-align:left;">Neues Passwort</label>
-      <input type="password" id="pwNew" class="menu-input" autocomplete="new-password" maxlength="20">
+      <input type="password" id="pwNew" class="menu-input" inputmode="numeric" autocomplete="new-password" maxlength="20">
       <label class="field-label" style="text-align:left;">Neues Passwort bestätigen</label>
-      <input type="password" id="pwConfirm" class="menu-input" autocomplete="new-password" maxlength="20">
+      <input type="password" id="pwConfirm" class="menu-input" inputmode="numeric" autocomplete="new-password" maxlength="20">
       <button type="button" id="savePasswordBtn" class="submit-btn" style="margin-top:10px;background:var(--red);">💾 Passwort speichern</button>
       <div id="savePasswordMsg" style="margin-top:12px;font-size:0.85rem;"></div>
     </div>
@@ -612,6 +631,85 @@ function renderDashboard(){
       div.innerHTML = `<div>"${(item.question || '').replace(/</g,'&lt;')}"</div><div class="ua-meta">${date}</div>`;
       listEl.appendChild(div);
     });
+  });
+})();
+
+// ---- System photos (the 56 fixed shop photos): hide/show + crop position ----
+(function(){
+  const gridEl = document.getElementById('systemPhotosGrid');
+  const statusEl = document.getElementById('systemPhotosStatus');
+  const msgEl = document.getElementById('systemPhotosMsg');
+  if(!gridEl) return;
+
+  const SYSTEM_PHOTOS = Array.from({length:56}, (_,i) => 'images/ph' + String(i).padStart(2,'0') + '.jpg');
+  let hidden = [];
+  let positions = {};
+  const POS_OPTIONS = [
+    { value: 'top', label: 'Oben' },
+    { value: 'center', label: 'Mitte' },
+    { value: 'bottom', label: 'Unten' },
+  ];
+
+  function persist(label){
+    if(label){ msgEl.textContent = label; msgEl.style.color = 'var(--muted)'; }
+    Promise.all([
+      safeSet('gallery_hidden', { hidden }),
+      safeSet('gallery_position', { positions }),
+    ]).then(results => {
+      const ok = results.every(Boolean);
+      msgEl.textContent = ok ? '✅ Gespeichert! Für alle Besucher live.' : '❌ Fehler beim Speichern.';
+      msgEl.style.color = ok ? '#7fd8d3' : '#ffb3a0';
+    });
+  }
+
+  function renderGrid(){
+    gridEl.innerHTML = '';
+    SYSTEM_PHOTOS.forEach(src => {
+      const isHidden = hidden.indexOf(src) !== -1;
+      const tile = document.createElement('div');
+      tile.className = 'gal-admin-tile' + (isHidden ? ' hidden-photo' : '');
+
+      const img = document.createElement('img');
+      img.src = src;
+      tile.appendChild(img);
+
+      const hideBtn = document.createElement('button');
+      hideBtn.type = 'button';
+      hideBtn.className = 'gal-hide-toggle' + (isHidden ? ' is-hidden' : '');
+      hideBtn.title = isHidden ? 'Wieder einblenden' : 'Ausblenden';
+      hideBtn.textContent = isHidden ? '🚫' : '👁';
+      hideBtn.addEventListener('click', () => {
+        if(isHidden) hidden = hidden.filter(h => h !== src);
+        else hidden.push(src);
+        renderGrid();
+        persist('Speichere …');
+      });
+      tile.appendChild(hideBtn);
+
+      const posSelect = document.createElement('select');
+      posSelect.className = 'gal-pos-select';
+      POS_OPTIONS.forEach(opt => {
+        const o = document.createElement('option');
+        o.value = opt.value;
+        o.textContent = opt.label;
+        if((positions[src] || 'center') === opt.value) o.selected = true;
+        posSelect.appendChild(o);
+      });
+      posSelect.addEventListener('change', () => {
+        positions[src] = posSelect.value;
+        persist('Speichere …');
+      });
+      tile.appendChild(posSelect);
+
+      gridEl.appendChild(tile);
+    });
+  }
+
+  Promise.all([safeGet('gallery_hidden'), safeGet('gallery_position')]).then(([h, p]) => {
+    if(h && Array.isArray(h.hidden)) hidden = h.hidden;
+    if(p && p.positions && typeof p.positions === 'object') positions = p.positions;
+    statusEl.textContent = SYSTEM_PHOTOS.length + ' Fotos' + (hidden.length ? ' — ' + hidden.length + ' ausgeblendet' : '');
+    renderGrid();
   });
 })();
 

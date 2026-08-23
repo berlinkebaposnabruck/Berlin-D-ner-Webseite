@@ -704,7 +704,7 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     <div class="story-text">
       <div class="eyebrow">Kiekste wa?</div>
       <div class="section-head" style="margin-bottom:0;">
-        <h2 class="tag-underline" data-draw>Kreuzberg zieht um.
+        <h2 class="tag-underline" data-draw><span data-i18n="storyTitle">Kreuzberg zieht um.</span>
           <svg viewBox="0 0 220 14" preserveAspectRatio="none"><path d="M2,8 C60,2 160,12 218,6"/></svg>
         </h2>
         <p data-i18n="storyP1">Kein Laden von der Stange. Bei uns hängt Berlin an der Wand — Graffiti, alte Fotos, ehrliche Sprüche. Und in der Küche steht das, worum es eigentlich geht.</p>
@@ -728,8 +728,8 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
   <div class="graffiti-tag" style="top:24px; left:3%; font-size:1.2rem; color:var(--amber); transform:rotate(-3deg); z-index:0;">Lecker, wa?</div>
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Die Karte</div>
-      <h2 class="tag-underline" data-draw>Was auf den Spieß kommt.
+      <div class="eyebrow" data-i18n="menuEyebrow">Die Karte</div>
+      <h2 class="tag-underline" data-draw><span data-i18n="menuTitle">Was auf den Spieß kommt.</span>
         <svg viewBox="0 0 260 14" preserveAspectRatio="none"><path d="M2,10 C80,2 190,14 258,4"/></svg>
       </h2>
       <p data-i18n="menuSub">Alle Preise wie an der Theke — keine Überraschungen, kein Kleingedrucktes im Warenkorb.</p>
@@ -780,12 +780,12 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
   <div class="graffiti-tag" style="top:24px; right:4%; font-size:1.2rem; color:var(--red-hi); transform:rotate(4deg); z-index:0;">100% Kiez</div>
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Frisch vom Spieß</div>
-      <h2 class="tag-underline" data-draw>So sieht's aus, bevor's im Brot landet.
+      <div class="eyebrow" data-i18n="galleryEyebrow">Frisch vom Spieß</div>
+      <h2 class="tag-underline" data-draw><span data-i18n="galleryTitle">So sieht's aus, bevor's im Brot landet.</span>
         <svg viewBox="0 0 320 14" preserveAspectRatio="none"><path d="M2,7 C100,1 230,13 318,5"/></svg>
       </h2>
     </div>
-    <p style="color:var(--muted);margin-top:14px;font-size:0.85rem;">Die Bilder wechseln von selbst — zum Vergrößern antippen.</p>
+    <p style="color:var(--muted);margin-top:14px;font-size:0.85rem;" data-i18n="galleryNote">Die Bilder wechseln von selbst — zum Vergrößern antippen.</p>
     <div class="gal-grid" id="galGrid">
       <figure class="g1" id="gTile0"><img src="images/gal_slicing.jpg" alt="Impressionen aus dem Laden"></figure>
       <figure class="g2" id="gTile1"><img src="images/gal_durum.jpg" alt="Impressionen aus dem Laden"></figure>
@@ -813,13 +813,13 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
 <button class="chat-fab" id="chatFab" type="button" aria-label="Assistent öffnen">🤖</button>
 <div class="chat-widget" id="chatWidget">
   <div class="chat-head">
-    <span>🤖 Berlin Döner Assistent</span>
+    <span data-i18n="chatHeader">🤖 Berlin Döner Assistent</span>
     <button type="button" id="chatClose" aria-label="Schließen">&times;</button>
   </div>
   <div class="chat-body" id="chatBody"></div>
   <div class="chat-suggestions" id="chatSuggestions"></div>
   <form class="chat-form" id="chatForm">
-    <input type="text" id="chatInput" placeholder="Frag mich etwas…" autocomplete="off">
+    <input type="text" id="chatInput" data-i18n-placeholder="chatPlaceholder" placeholder="Frag mich etwas…" autocomplete="off">
     <button type="submit">➤</button>
   </form>
 </div>
@@ -829,11 +829,11 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     <div class="rating-badge">
       <div class="num">4,5</div>
       <div class="stars">★★★★★</div>
-      <div class="count">1.179 Bewertungen</div>
+      <div class="count" data-i18n="reviewsCount">1.179 Bewertungen</div>
     </div>
     <div class="reviews-text">
-      <p>Gäste heben besonders das saftige, frisch gewürzte Fleisch, das knusprige Brot und die hausgemachten Soßen hervor — dazu ein freundliches Team und schneller Service.</p>
-      <span>— Zusammengefasst aus Google-Bewertungen</span>
+      <p data-i18n="reviewsText">Gäste heben besonders das saftige, frisch gewürzte Fleisch, das knusprige Brot und die hausgemachten Soßen hervor — dazu ein freundliches Team und schneller Service.</p>
+      <span data-i18n="reviewsSource">— Zusammengefasst aus Google-Bewertungen</span>
     </div>
   </div>
 </section>
@@ -841,8 +841,8 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
 <section class="standort" id="standort">
   <div class="wrap std-grid">
     <div>
-      <div class="eyebrow">Vorbeikommen</div>
-      <h2 style="font-size:2.4rem;margin-bottom:20px;">Mitten in der City.</h2>
+      <div class="eyebrow" data-i18n="locEyebrow">Vorbeikommen</div>
+      <h2 style="font-size:2.4rem;margin-bottom:20px;" data-i18n="locTitle">Mitten in der City.</h2>
       <p style="color:var(--muted);line-height:1.7;" data-i18n="locP">Direkt am Kollegienwall, ein paar Schritte vom ZOB und der Innenstadt entfernt. Parkplätze gibt's bei Galeria Kaufhof, ganz in der Nähe.</p>
       <div class="std-actions">
         <a class="btn btn-primary" href="https://www.google.com/maps/dir/?api=1&destination=Kollegienwall+1a+49074+Osnabr%C3%BCck" target="_blank" rel="noopener" data-i18n="btnRouteMaps">Route in Google Maps</a>
@@ -851,9 +851,9 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
     <div class="std-card">
       <span class="pin-graphic"></span>
       <h3>Kollegienwall 1a, 49074 Osnabrück</h3>
-      <div class="std-row"><span>Mo – Do</span><span id="hoursMoDo">11:00 – 23:00</span></div>
-      <div class="std-row"><span>Fr – Sa</span><span id="hoursFrSa">11:00 – 05:00</span></div>
-      <div class="std-row"><span>So</span><span id="hoursSo">11:00 – 23:00</span></div>
+      <div class="std-row"><span data-i18n="dayMoDo">Mo – Do</span><span id="hoursMoDo">11:00 – 23:00</span></div>
+      <div class="std-row"><span data-i18n="dayFrSa">Fr – Sa</span><span id="hoursFrSa">11:00 – 05:00</span></div>
+      <div class="std-row"><span data-i18n="daySo">So</span><span id="hoursSo">11:00 – 23:00</span></div>
       <div class="std-row" style="border-bottom:none;"><span>Instagram</span><span>@berlindoener_os</span></div>
     </div>
   </div>
@@ -862,17 +862,17 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
 <section class="kontakt" id="kontakt">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Direkt an uns</div>
-      <h2 style="font-size:2.2rem;">Was auf dem Herzen?</h2>
-      <p style="color:var(--muted);">Lob, Kritik, Fragen zu einer Bestellung oder einfach nur Hallo sagen — schreibt uns.</p>
+      <div class="eyebrow" data-i18n="contactEyebrow">Direkt an uns</div>
+      <h2 style="font-size:2.2rem;" data-i18n="contactTitle">Was auf dem Herzen?</h2>
+      <p style="color:var(--muted);" data-i18n="contactSub">Lob, Kritik, Fragen zu einer Bestellung oder einfach nur Hallo sagen — schreibt uns.</p>
     </div>
     <form class="kontakt-form" id="kontaktForm">
       <div class="kontakt-row">
-        <input type="text" id="kName" placeholder="Dein Name" required class="kontakt-input">
-        <input type="email" id="kEmail" placeholder="Deine E-Mail" required class="kontakt-input">
+        <input type="text" id="kName" data-i18n-placeholder="contactNamePh" placeholder="Dein Name" required class="kontakt-input">
+        <input type="email" id="kEmail" data-i18n-placeholder="contactEmailPh" placeholder="Deine E-Mail" required class="kontakt-input">
       </div>
-      <textarea id="kMessage" placeholder="Deine Nachricht..." required class="kontakt-input" rows="5"></textarea>
-      <button type="submit" class="btn btn-primary" id="kSubmitBtn">Nachricht senden</button>
+      <textarea id="kMessage" data-i18n-placeholder="contactMsgPh" placeholder="Deine Nachricht..." required class="kontakt-input" rows="5"></textarea>
+      <button type="submit" class="btn btn-primary" id="kSubmitBtn" data-i18n="contactSubmit">Nachricht senden</button>
       <div id="kMsg" class="kontakt-msg"></div>
     </form>
   </div>
@@ -1053,19 +1053,17 @@ setTimeout(updateStatusBar, 0);
   const input = document.getElementById('chatInput');
   if(!fab) return;
 
-  const SUGGESTIONS = [
-    'Öffnungszeiten',
-    'Wo seid ihr?',
-    'Liefert ihr?',
-    'Ist das Fleisch Helal?',
-    'Habt ihr vegetarisch?',
-    'Kann man bar zahlen?',
-  ];
+  function getLang(){
+    try { return localStorage.getItem('bd_lang') || 'de'; } catch(e){ return 'de'; }
+  }
 
   function renderSuggestions(){
     if(!suggestionsEl) return;
+    const lang = getLang();
+    const keys = ['chatSuggestion1','chatSuggestion2','chatSuggestion3','chatSuggestion4','chatSuggestion5','chatSuggestion6'];
     suggestionsEl.innerHTML = '';
-    SUGGESTIONS.forEach(text => {
+    keys.forEach(key => {
+      const text = (I18N[key] && (I18N[key][lang] || I18N[key].de)) || key;
       const chip = document.createElement('button');
       chip.type = 'button';
       chip.className = 'chat-chip';
@@ -1103,7 +1101,8 @@ setTimeout(updateStatusBar, 0);
     widget.classList.add('open');
     if(!greeted){
       greeted = true;
-      addMsg('Hey! 👋 Ich bin der Berlin-Döner-Assistent. Frag mich nach Öffnungszeiten, Adresse, der Speisekarte, Lieferoptionen und mehr.', 'bot');
+      const lang = getLang();
+      addMsg((I18N.chatGreeting[lang] || I18N.chatGreeting.de), 'bot');
       renderSuggestions();
     }
   }
@@ -1113,58 +1112,60 @@ setTimeout(updateStatusBar, 0);
   function answer(raw){
     const q = raw.toLowerCase();
     const h = window.__bdHours || {};
+    const lang = getLang();
+    const t = (key) => (I18N[key] && (I18N[key][lang] || I18N[key].de)) || '';
 
-    if(/(öffnung|offen|geöffnet|geschlossen|uhrzeit|wann.*auf|zeiten)/.test(q)){
+    if(/(öffnung|offen|geöffnet|geschlossen|uhrzeit|wann.*auf|zeiten|opening|hours|open|closed|çalışma|saat|açık|kapalı|program|orar|deschis|închis)/.test(q)){
       bumpFaqCounter('hours');
-      return `Unsere Öffnungszeiten:\nMo–Do: ${h.moDo}\nFr–Sa: ${h.frSa}\nSo: ${h.so}`;
+      return `${t('botHoursIntro')}\nMo–Do: ${h.moDo}\nFr–Sa: ${h.frSa}\nSo: ${h.so}`;
     }
-    if(/(adresse|wo seid|standort|anfahrt|wo liegt|wo ist|parken|parkplatz)/.test(q)){
+    if(/(adresse|wo seid|standort|anfahrt|wo liegt|wo ist|parken|parkplatz|address|where.*you|location|adres|nerede|konum|park|adresă|unde sunteți|locație)/.test(q)){
       bumpFaqCounter('address');
-      if(/(park)/.test(q)) return 'Parkplätze gibt es ganz in der Nähe bei Galeria Kaufhof, nur ein paar Schritte entfernt.';
-      return 'Wir sind am Kollegienwall 1a, 49074 Osnabrück — mitten in der Innenstadt, ein paar Schritte vom ZOB entfernt.';
+      if(/(park)/.test(q)) return t('botParking');
+      return t('botAddress');
     }
-    if(/(liefer|lieferando|wolt|uber ?eats|bestell)/.test(q)){
+    if(/(liefer|lieferando|wolt|uber ?eats|bestell|deliver|order|teslimat|sipariş|livr|comand)/.test(q)){
       bumpFaqCounter('delivery');
-      return 'Bestellen könnt ihr über Lieferando, Wolt oder Uber Eats — die Buttons findet ihr oben rechts unter "Bestellen".';
+      return t('botDelivery');
     }
-    if(/(speisekarte|menü|karte|preis|kostet|was gibt)/.test(q)){
+    if(/(speisekarte|menü|karte|preis|kostet|was gibt|menu|price|cost|fiyat|ne var|meniu|preț|cât costă)/.test(q)){
       bumpFaqCounter('menu');
-      return 'Unsere Klassiker: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) und mehr. Die volle Karte gibt\'s weiter oben im Bereich "Speisekarte".';
+      return t('botMenu');
     }
     if(/(helal|halal)/.test(q)){
       bumpFaqCounter('halal');
-      return 'Ja, unser Fleisch ist zu 100% Helal. 🕌';
+      return t('botHalal');
     }
-    if(/(vegetarisch|vegan|veggie|fleischlos)/.test(q)){
+    if(/(vegetarisch|vegan|veggie|fleischlos|vegetarian|vejetaryen|vejeteryan|vegetarian)/.test(q)){
       bumpFaqCounter('veggie');
-      return 'Wir haben eine Veggie Tasche mit gebratenem Gemüse und eine Falafel Tasche für alle ohne Fleisch.';
+      return t('botVeggie');
     }
-    if(/(bar ?zahlen|karte zahlen|kartenzahlung|ec[- ]?karte|zahlung|bezahlen|paypal)/.test(q)){
+    if(/(bar ?zahlen|karte zahlen|kartenzahlung|ec[- ]?karte|zahlung|bezahlen|paypal|cash|pay by card|payment|nakit|ödeme|kart.*ödeme|plată|numerar|card)/.test(q)){
       bumpFaqCounter('payment');
-      return 'Bei uns im Laden könnt ihr sowohl bar als auch mit Karte zahlen. Bei Lieferando, Wolt und Uber Eats gelten deren eigene Zahlungsoptionen.';
+      return t('botPayment');
     }
-    if(/(catering|event|feier|firmenfeier|geburtstag|gruppe)/.test(q)){
+    if(/(catering|event|feier|firmenfeier|geburtstag|gruppe|party|birthday|group|etkinlik|parti|doğum günü|grup|eveniment|petrecere|grup)/.test(q)){
       bumpFaqCounter('catering');
-      return 'Für größere Bestellungen oder Feiern schreibt uns am besten direkt über das Kontaktformular weiter unten — wir finden eine Lösung.';
+      return t('botCatering');
     }
-    if(/(job|arbeit|bewerbung|mitarbeiter gesucht|aushilfe)/.test(q)){
+    if(/(job|arbeit|bewerbung|mitarbeiter gesucht|aushilfe|career|hiring|iş|başvuru|çalışan ar|angajare|loc de muncă)/.test(q)){
       bumpFaqCounter('jobs');
-      return 'Aktuell bitte über das Kontaktformular weiter unten anfragen — dort erreicht ihr uns direkt.';
+      return t('botJobs');
     }
-    if(/(kontakt|erreichen|anrufen|telefon|email|e-mail)/.test(q)){
+    if(/(kontakt|erreichen|anrufen|telefon|email|e-mail|contact|phone|call|iletişim|telefon|arama|contact|telefon|sunați)/.test(q)){
       bumpFaqCounter('contact');
-      return 'Am einfachsten über das Kontaktformular weiter unten auf der Seite — oder über Instagram @berlindoener_os.';
+      return t('botContact');
     }
-    if(/(hallo|hi|hey|moin|guten tag)/.test(q)){
+    if(/(hallo|hi|hey|moin|guten tag|hello|merhaba|selam|salut|bună)/.test(q)){
       bumpFaqCounter('greeting');
-      return 'Hallo! Wie kann ich helfen? Frag mich z. B. nach Öffnungszeiten oder der Speisekarte.';
+      return t('botGreetingReply');
     }
-    if(/(danke|thx|dankeschön)/.test(q)){
-      return 'Gerne! 😊 Guten Hunger!';
+    if(/(danke|thx|dankeschön|thanks|thank you|teşekkür|sağol|mulțumesc)/.test(q)){
+      return t('botThanks');
     }
     bumpFaqCounter('unmatched');
     logUnanswered(raw);
-    return 'Das habe ich nicht ganz verstanden — versuch es z. B. mit "Öffnungszeiten", "Adresse" oder "Speisekarte". Für alles andere hilft dir gerne das Kontaktformular weiter unten weiter.';
+    return t('botFallback');
   }
 
   function sendMessage(val){
@@ -1198,7 +1199,9 @@ setTimeout(updateStatusBar, 0);
     if(!name || !email || !message) return;
 
     btn.disabled = true;
-    msgEl.textContent = 'Wird gesendet …';
+    let lang = 'de';
+    try { lang = localStorage.getItem('bd_lang') || 'de'; } catch(e){}
+    msgEl.textContent = I18N.contactSending[lang] || I18N.contactSending.de;
     msgEl.className = 'kontakt-msg';
 
     const key = 'contactmsg:' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
@@ -1223,11 +1226,11 @@ setTimeout(updateStatusBar, 0);
 
     btn.disabled = false;
     if(saved){
-      msgEl.textContent = '✅ Danke! Deine Nachricht ist angekommen.';
+      msgEl.textContent = I18N.contactSuccess[lang] || I18N.contactSuccess.de;
       msgEl.className = 'kontakt-msg ok';
       form.reset();
     } else {
-      msgEl.textContent = '❌ Konnte nicht gesendet werden. Bitte später erneut versuchen.';
+      msgEl.textContent = I18N.contactError[lang] || I18N.contactError.de;
       msgEl.className = 'kontakt-msg err';
     }
   });
@@ -1340,6 +1343,12 @@ function initGalleryLightbox(){
   });
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const POS_CSS = { top: 'center 0%', center: 'center center', bottom: 'center 100%' };
+  function applyPos(imgEl, src){
+    const posKey = window.__bdPhotoPositions && window.__bdPhotoPositions[src];
+    imgEl.style.objectPosition = POS_CSS[posKey] || '';
+  }
+  state.forEach(s => applyPos(s.img, PHOTOS[s.index]));
   if(!reduce){
     setInterval(() => {
       state.forEach(s => {
@@ -1347,6 +1356,7 @@ function initGalleryLightbox(){
         s.img.style.opacity = '0';
         setTimeout(() => {
           s.img.src = PHOTOS[s.index];
+          applyPos(s.img, PHOTOS[s.index]);
           s.img.style.opacity = '1';
         }, 350);
       });
@@ -1483,6 +1493,125 @@ const I18N = {
   statusOpen: { de:"Jetzt geöffnet", en:"Open now", tr:"Şu an açık", ro:"Deschis acum" },
   statusClosingSoon: { de:"Schließt in {m} Min.", en:"Closing in {m} min", tr:"{m} dk sonra kapanıyor", ro:"Se închide în {m} min" },
   statusClosed: { de:"Geschlossen", en:"Closed", tr:"Şu an kapalı", ro:"Închis" },
+
+  menuEyebrow: { de:"Die Karte", en:"The Menu", tr:"Menü", ro:"Meniul" },
+  menuTitle: { de:"Was auf den Spieß kommt.", en:"What goes on the skewer.", tr:"Şişe ne gidiyor.", ro:"Ce se pune pe frigare." },
+  galleryEyebrow: { de:"Frisch vom Spieß", en:"Fresh off the skewer", tr:"Şişten taze", ro:"Proaspăt de pe frigare" },
+  galleryTitle: { de:"So sieht's aus, bevor's im Brot landet.", en:"This is what it looks like before it lands in the bread.", tr:"Ekmeğe girmeden önce böyle görünüyor.", ro:"Așa arată înainte să ajungă în pâine." },
+  galleryNote: { de:"Die Bilder wechseln von selbst — zum Vergrößern antippen.", en:"The photos change automatically — tap to enlarge.", tr:"Fotoğraflar kendiliğinden değişir — büyütmek için dokun.", ro:"Fotografiile se schimbă automat — atinge pentru a mări." },
+
+  chatHeader: { de:"🤖 Berlin Döner Assistent", en:"🤖 Berlin Döner Assistant", tr:"🤖 Berlin Döner Asistanı", ro:"🤖 Asistent Berlin Döner" },
+  chatPlaceholder: { de:"Frag mich etwas…", en:"Ask me something…", tr:"Bana bir şey sor…", ro:"Întreabă-mă ceva…" },
+  chatGreeting: {
+    de:"Hey! 👋 Ich bin der Berlin-Döner-Assistent. Frag mich nach Öffnungszeiten, Adresse, der Speisekarte, Lieferoptionen und mehr.",
+    en:"Hey! 👋 I'm the Berlin Döner assistant. Ask me about opening hours, the address, the menu, delivery options and more.",
+    tr:"Selam! 👋 Ben Berlin Döner asistanıyım. Çalışma saatleri, adres, menü, teslimat seçenekleri ve daha fazlası hakkında bana soru sorabilirsin.",
+    ro:"Salut! 👋 Sunt asistentul Berlin Döner. Întreabă-mă despre orele de deschidere, adresă, meniu, opțiuni de livrare și multe altele."
+  },
+  chatSuggestion1: { de:"Öffnungszeiten", en:"Opening hours", tr:"Çalışma saatleri", ro:"Program" },
+  chatSuggestion2: { de:"Wo seid ihr?", en:"Where are you?", tr:"Nerede bulunuyorsunuz?", ro:"Unde sunteți?" },
+  chatSuggestion3: { de:"Liefert ihr?", en:"Do you deliver?", tr:"Teslimat yapıyor musunuz?", ro:"Livrați?" },
+  chatSuggestion4: { de:"Ist das Fleisch Helal?", en:"Is the meat Halal?", tr:"Et helal mi?", ro:"Carnea este Halal?" },
+  chatSuggestion5: { de:"Habt ihr vegetarisch?", en:"Do you have vegetarian?", tr:"Vejetaryen seçeneğiniz var mı?", ro:"Aveți opțiuni vegetariene?" },
+  chatSuggestion6: { de:"Kann man bar zahlen?", en:"Can I pay cash?", tr:"Nakit ödeme yapılabilir mi?", ro:"Se poate plăti cash?" },
+
+  reviewsCount: { de:"1.179 Bewertungen", en:"1,179 reviews", tr:"1.179 değerlendirme", ro:"1.179 recenzii" },
+  reviewsText: {
+    de:"Gäste heben besonders das saftige, frisch gewürzte Fleisch, das knusprige Brot und die hausgemachten Soßen hervor — dazu ein freundliches Team und schneller Service.",
+    en:"Guests especially highlight the juicy, freshly seasoned meat, the crispy bread and the homemade sauces — plus a friendly team and fast service.",
+    tr:"Misafirler özellikle sulu, taze baharatlanmış eti, çıtır ekmeği ve ev yapımı sosları öne çıkarıyor — ayrıca güler yüzlü ekip ve hızlı servis.",
+    ro:"Clienții evidențiază în special carnea suculentă, condimentată proaspăt, pâinea crocantă și sosurile de casă — plus o echipă prietenoasă și servire rapidă."
+  },
+  reviewsSource: { de:"— Zusammengefasst aus Google-Bewertungen", en:"— Summarized from Google reviews", tr:"— Google değerlendirmelerinden özetlenmiştir", ro:"— Rezumat din recenziile Google" },
+
+  locEyebrow: { de:"Vorbeikommen", en:"Visit us", tr:"Bize uğrayın", ro:"Vizitează-ne" },
+  locTitle: { de:"Mitten in der City.", en:"Right in the city center.", tr:"Şehrin tam ortasında.", ro:"Chiar în centrul orașului." },
+  dayMoDo: { de:"Mo – Do", en:"Mon – Thu", tr:"Pzt – Per", ro:"Lun – Joi" },
+  dayFrSa: { de:"Fr – Sa", en:"Fri – Sat", tr:"Cum – Cmt", ro:"Vin – Sâm" },
+  daySo: { de:"So", en:"Sun", tr:"Paz", ro:"Dum" },
+
+  contactEyebrow: { de:"Direkt an uns", en:"Straight to us", tr:"Doğrudan bize", ro:"Direct la noi" },
+  contactTitle: { de:"Was auf dem Herzen?", en:"What's on your mind?", tr:"Aklında ne var?", ro:"Ce ai pe suflet?" },
+  contactSub: { de:"Lob, Kritik, Fragen zu einer Bestellung oder einfach nur Hallo sagen — schreibt uns.", en:"Praise, criticism, questions about an order, or just to say hi — write to us.", tr:"Övgü, eleştiri, siparişle ilgili sorular ya da sadece merhaba demek için — bize yazın.", ro:"Laude, critici, întrebări despre o comandă sau doar ca să spui salut — scrie-ne." },
+  contactNamePh: { de:"Dein Name", en:"Your name", tr:"Adınız", ro:"Numele tău" },
+  contactEmailPh: { de:"Deine E-Mail", en:"Your email", tr:"E-postanız", ro:"Emailul tău" },
+  contactMsgPh: { de:"Deine Nachricht...", en:"Your message...", tr:"Mesajınız...", ro:"Mesajul tău..." },
+  contactSubmit: { de:"Nachricht senden", en:"Send message", tr:"Mesaj gönder", ro:"Trimite mesaj" },
+  contactSending: { de:"Wird gesendet …", en:"Sending …", tr:"Gönderiliyor …", ro:"Se trimite …" },
+  contactSuccess: { de:"✅ Danke! Deine Nachricht ist angekommen.", en:"✅ Thanks! Your message has arrived.", tr:"✅ Teşekkürler! Mesajınız ulaştı.", ro:"✅ Mulțumim! Mesajul tău a ajuns." },
+  contactError: { de:"❌ Konnte nicht gesendet werden. Bitte später erneut versuchen.", en:"❌ Could not be sent. Please try again later.", tr:"❌ Gönderilemedi. Lütfen daha sonra tekrar deneyin.", ro:"❌ Nu a putut fi trimis. Încearcă din nou mai târziu." },
+
+  storyTitle: { de:"Kreuzberg zieht um.", en:"Kreuzberg is moving in.", tr:"Kreuzberg taşınıyor.", ro:"Kreuzberg se mută." },
+
+  botHoursIntro: { de:"Unsere Öffnungszeiten:", en:"Our opening hours:", tr:"Çalışma saatlerimiz:", ro:"Programul nostru:" },
+  botParking: {
+    de:"Parkplätze gibt es ganz in der Nähe bei Galeria Kaufhof, nur ein paar Schritte entfernt.",
+    en:"Parking is available very close by at Galeria Kaufhof, just a few steps away.",
+    tr:"Otopark, sadece birkaç adım ötedeki Galeria Kaufhof'un yanında bulunuyor.",
+    ro:"Parcare este disponibilă foarte aproape, la Galeria Kaufhof, la câțiva pași."
+  },
+  botAddress: {
+    de:"Wir sind am Kollegienwall 1a, 49074 Osnabrück — mitten in der Innenstadt, ein paar Schritte vom ZOB entfernt.",
+    en:"We're at Kollegienwall 1a, 49074 Osnabrück — right in the city center, a few steps from the central bus station.",
+    tr:"Kollegienwall 1a, 49074 Osnabrück adresindeyiz — şehir merkezinde, otogara birkaç adım mesafede.",
+    ro:"Ne găsești pe Kollegienwall 1a, 49074 Osnabrück — chiar în centrul orașului, la câțiva pași de autogară."
+  },
+  botDelivery: {
+    de:'Bestellen könnt ihr über Lieferando, Wolt oder Uber Eats — die Buttons findet ihr oben rechts unter "Bestellen".',
+    en:'You can order via Lieferando, Wolt or Uber Eats — you\'ll find the buttons at the top right under "Order".',
+    tr:'Lieferando, Wolt veya Uber Eats üzerinden sipariş verebilirsiniz — butonları sağ üstte "Sipariş Ver" altında bulabilirsiniz.',
+    ro:'Poți comanda prin Lieferando, Wolt sau Uber Eats — găsești butoanele sus, în dreapta, sub „Comandă”.'
+  },
+  botMenu: {
+    de:'Unsere Klassiker: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) und mehr. Die volle Karte gibt\'s weiter oben im Bereich "Speisekarte".',
+    en:'Our classics: Steak Tasche (€10), Kebap Tasche (€8), Berliner Teller (€13), Dürüm (€9) and more. The full menu is further up in the "Menu" section.',
+    tr:'Klasiklerimiz: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) ve daha fazlası. Tam menüyü yukarıdaki "Menü" bölümünde bulabilirsiniz.',
+    ro:'Clasicele noastre: Steak Tasche (10€), Kebap Tasche (8€), Berliner Teller (13€), Dürüm (9€) și multe altele. Meniul complet este mai sus, în secțiunea „Meniu”.'
+  },
+  botHalal: { de:"Ja, unser Fleisch ist zu 100% Helal. 🕌", en:"Yes, our meat is 100% Halal. 🕌", tr:"Evet, etimiz %100 helal. 🕌", ro:"Da, carnea noastră este 100% Halal. 🕌" },
+  botVeggie: {
+    de:"Wir haben eine Veggie Tasche mit gebratenem Gemüse und eine Falafel Tasche für alle ohne Fleisch.",
+    en:"We have a Veggie Tasche with fried vegetables and a Falafel Tasche for everyone who skips meat.",
+    tr:"Et yemeyenler için kızarmış sebzeli Veggie Tasche ve Falafel Tasche seçeneklerimiz var.",
+    ro:"Avem o Veggie Tasche cu legume prăjite și o Falafel Tasche pentru cei care nu mănâncă carne."
+  },
+  botPayment: {
+    de:"Bei uns im Laden könnt ihr sowohl bar als auch mit Karte zahlen. Bei Lieferando, Wolt und Uber Eats gelten deren eigene Zahlungsoptionen.",
+    en:"In our shop you can pay both cash and by card. On Lieferando, Wolt and Uber Eats their own payment options apply.",
+    tr:"Dükkanımızda hem nakit hem kartla ödeme yapabilirsiniz. Lieferando, Wolt ve Uber Eats'te ise kendi ödeme seçenekleri geçerlidir.",
+    ro:"În local poți plăti atât cash, cât și cu cardul. Pe Lieferando, Wolt și Uber Eats se aplică opțiunile lor proprii de plată."
+  },
+  botCatering: {
+    de:"Für größere Bestellungen oder Feiern schreibt uns am besten direkt über das Kontaktformular weiter unten — wir finden eine Lösung.",
+    en:"For bigger orders or celebrations, best write to us directly via the contact form further down — we'll find a solution.",
+    tr:"Büyük siparişler veya kutlamalar için aşağıdaki iletişim formundan bize doğrudan yazın — bir çözüm buluruz.",
+    ro:"Pentru comenzi mai mari sau petreceri, scrie-ne direct prin formularul de contact mai jos — găsim o soluție."
+  },
+  botJobs: {
+    de:"Aktuell bitte über das Kontaktformular weiter unten anfragen — dort erreicht ihr uns direkt.",
+    en:"Please get in touch via the contact form further down for now — that reaches us directly.",
+    tr:"Şimdilik lütfen aşağıdaki iletişim formundan bize ulaşın — doğrudan bize ulaşır.",
+    ro:"Te rugăm să ne contactezi prin formularul de contact de mai jos — ajunge direct la noi."
+  },
+  botContact: {
+    de:"Am einfachsten über das Kontaktformular weiter unten auf der Seite — oder über Instagram @berlindoener_os.",
+    en:"Easiest via the contact form further down the page — or via Instagram @berlindoener_os.",
+    tr:"En kolayı sayfanın aşağısındaki iletişim formu — ya da Instagram @berlindoener_os.",
+    ro:"Cel mai simplu prin formularul de contact de mai jos pe pagină — sau prin Instagram @berlindoener_os."
+  },
+  botGreetingReply: {
+    de:"Hallo! Wie kann ich helfen? Frag mich z. B. nach Öffnungszeiten oder der Speisekarte.",
+    en:"Hello! How can I help? Ask me e.g. about opening hours or the menu.",
+    tr:"Merhaba! Nasıl yardımcı olabilirim? Örneğin çalışma saatleri veya menü hakkında sorabilirsin.",
+    ro:"Salut! Cum te pot ajuta? Întreabă-mă de exemplu despre program sau meniu."
+  },
+  botThanks: { de:"Gerne! 😊 Guten Hunger!", en:"You're welcome! 😊 Enjoy your meal!", tr:"Rica ederim! 😊 Afiyet olsun!", ro:"Cu plăcere! 😊 Poftă bună!" },
+  botFallback: {
+    de:'Das habe ich nicht ganz verstanden — versuch es z. B. mit "Öffnungszeiten", "Adresse" oder "Speisekarte". Für alles andere hilft dir gerne das Kontaktformular weiter unten weiter.',
+    en:'I didn\'t quite understand that — try e.g. "opening hours", "address" or "menu". For anything else, the contact form further down is happy to help.',
+    tr:'Bunu tam anlayamadım — örneğin "çalışma saatleri", "adres" veya "menü" diyerek dene. Başka her şey için aşağıdaki iletişim formu yardımcı olur.',
+    ro:'Nu am înțeles exact — încearcă de exemplu „program”, „adresă” sau „meniu”. Pentru orice altceva, formularul de contact de mai jos te poate ajuta.'
+  },
 };
 
 (function(){
@@ -1502,6 +1631,10 @@ const I18N = {
     document.querySelectorAll('[data-i18n-html]').forEach(el=>{
       const key = el.getAttribute('data-i18n-html');
       if(I18N[key] && I18N[key][lang]) el.innerHTML = I18N[key][lang];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-placeholder');
+      if(I18N[key] && I18N[key][lang]) el.setAttribute('placeholder', I18N[key][lang]);
     });
     const flagEl = document.getElementById('langFlag');
     if(flagEl) flagEl.textContent = FLAGS[lang] || '🇩🇪';
@@ -1645,13 +1778,16 @@ function initMasterCycler(){
   // rotating background (text-heavy, prices may not match the live menu).
   const MOOD_PHOTOS = PHOTOS.filter(p => !p.endsWith('ph00.jpg'));
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const POS_CSS = { top: 'center 0%', center: 'center center', bottom: 'center 100%' };
 
   function makeCycler(elA, elB, startIndex, isBg){
     let i = startIndex % MOOD_PHOTOS.length;
     let showingA = true;
     function paint(el, idx){
-      if(isBg){ el.style.backgroundImage = `url('${MOOD_PHOTOS[idx]}')`; }
-      else { el.style.backgroundImage = `url('${MOOD_PHOTOS[idx]}')`; }
+      const src = MOOD_PHOTOS[idx];
+      el.style.backgroundImage = `url('${src}')`;
+      const posKey = window.__bdPhotoPositions && window.__bdPhotoPositions[src];
+      el.style.backgroundPosition = POS_CSS[posKey] || '';
     }
     paint(elA, i);
     if(reduce) return;
@@ -1677,13 +1813,27 @@ function initMasterCycler(){
   }
 }
 
-// ---- Bootstrap: pull staff-added gallery photos from Supabase, THEN start the cyclers ----
-// (so newly uploaded photos from personal.html appear in the hero/gallery rotation too)
+// ---- Bootstrap: pull staff-added gallery photos + hide/position settings from ----
+// Supabase, THEN start the cyclers (so staff changes in personal.html take effect)
+window.__bdPhotoPositions = {};
 (async function(){
   try {
-    const extra = await safeGet('gallery_extra');
+    const [extra, hiddenData, posData] = await Promise.all([
+      safeGet('gallery_extra'),
+      safeGet('gallery_hidden'),
+      safeGet('gallery_position'),
+    ]);
     if(extra && Array.isArray(extra.items)){
       extra.items.forEach(it => { if(it && it.dataUrl) PHOTOS.push(it.dataUrl); });
+    }
+    if(posData && posData.positions && typeof posData.positions === 'object'){
+      window.__bdPhotoPositions = posData.positions;
+    }
+    if(hiddenData && Array.isArray(hiddenData.hidden) && hiddenData.hidden.length){
+      const hiddenSet = new Set(hiddenData.hidden);
+      const kept = PHOTOS.filter(p => !hiddenSet.has(p));
+      PHOTOS.length = 0;
+      PHOTOS.push(...kept);
     }
   } catch(e){}
   initGalleryLightbox();
