@@ -130,6 +130,30 @@ body{
 }
 .link-btn:hover{border-color:var(--amber);color:var(--amber);}
 
+/* ---------- MENU MANAGEMENT ---------- */
+.menu-input{
+  width:100%;background:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:12px 14px;color:var(--chalk);font-size:0.9rem;font-family:inherit;
+  margin-bottom:10px;
+}
+.menu-input:focus{outline:none;border-color:var(--teal-hi);}
+.menu-form{display:flex;flex-direction:column;}
+.menu-item-row{
+  display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line);
+}
+.menu-item-row img{width:40px;height:40px;border-radius:6px;object-fit:cover;flex-shrink:0;}
+.menu-item-row .mi-info{flex:1;min-width:0;}
+.menu-item-row .mi-name{font-weight:600;font-size:0.92rem;}
+.menu-item-row .mi-cat{font-size:0.72rem;color:var(--muted);}
+.menu-item-row .mi-price-input{
+  width:80px;background:var(--ink);border:1px solid var(--line);border-radius:6px;
+  padding:8px;color:var(--amber);font-family:'Anton',sans-serif;text-align:right;font-size:0.95rem;
+}
+.mi-delete{
+  background:none;border:none;color:#ff6a4a;font-size:1.3rem;cursor:pointer;padding:4px 8px;line-height:1;
+}
+.mi-delete:hover{color:#ff9580;}
+
 @media (max-width:700px){
   .stat-grid{grid-template-columns:repeat(2,1fr);}
 }
@@ -211,11 +235,37 @@ body{
   <div class="panel">
     <h2>Schnellzugriff</h2>
     <div class="link-grid">
-      <a class="link-btn" href="berlin-doener-osnabrueck.html#menu">📋 Speisekarte ansehen</a>
-      <a class="link-btn" href="berlin-doener-osnabrueck.html#galerie">🖼️ Galerie ansehen</a>
-      <a class="link-btn" href="berlin-doener-osnabrueck.html#standort">📍 Standort &amp; Öffnungszeiten</a>
+      <a class="link-btn" href="index.html#menu">📋 Speisekarte ansehen</a>
+      <a class="link-btn" href="index.html#galerie">🖼️ Galerie ansehen</a>
+      <a class="link-btn" href="index.html#standort">📍 Standort &amp; Öffnungszeiten</a>
       <button class="link-btn" type="button" id="resetStats">↺ Statistik zurücksetzen</button>
     </div>
+  </div>
+
+  <div class="panel" id="menuPanel">
+    <h2>Speisekarte verwalten</h2>
+    <p class="panel-note" style="margin-top:0;">✅ Änderungen hier werden nach dem Speichern für <b>alle Besucher</b> der Website live sichtbar — nicht nur auf diesem Gerät.</p>
+    <div id="menuStatus" style="margin:14px 0;font-size:0.85rem;color:var(--muted);">Lade aktuelle Speisekarte…</div>
+    <div id="menuItemsList"></div>
+
+    <h3 style="margin-top:30px;font-family:'Anton',sans-serif;font-size:1rem;color:var(--teal-hi);letter-spacing:0.4px;">Neues Produkt hinzufügen</h3>
+    <div class="menu-form">
+      <select id="newItemCategory" class="menu-input">
+        <option value="Taschen">Taschen</option>
+        <option value="Klassiker & Extras">Klassiker &amp; Extras</option>
+      </select>
+      <input type="text" id="newItemName" class="menu-input" placeholder="Name (z. B. Falafel Tasche)">
+      <input type="text" id="newItemNote" class="menu-input" placeholder="Zusatz-Info (optional)">
+      <input type="number" id="newItemPrice" class="menu-input" placeholder="Preis in € (z. B. 8.50)" step="0.10" min="0">
+      <label class="menu-input" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+        <span id="newItemPhotoLabel">📷 Foto hinzufügen (optional)</span>
+        <input type="file" id="newItemPhoto" accept="image/*" style="display:none;">
+      </label>
+      <button type="button" id="addItemBtn" class="submit-btn" style="margin-top:6px;">+ Zur Liste hinzufügen</button>
+    </div>
+
+    <button type="button" id="saveMenuBtn" class="submit-btn" style="margin-top:26px;background:var(--red);width:100%;">💾 Speichern &amp; für alle Kunden veröffentlichen</button>
+    <div id="saveMenuMsg" style="margin-top:12px;font-size:0.85rem;"></div>
   </div>
 </div>
 
@@ -298,6 +348,184 @@ resetBtn.addEventListener('click', ()=>{
   ['bd_click_lieferando','bd_click_wolt','bd_click_uber','bd_pageviews'].forEach(k=>setNum(k,0));
   renderDashboard();
 });
+
+// ---- Menu management: edits here are saved via a Netlify Function so ALL visitors see them ----
+(function(){
+  const DEFAULT_ITEMS = [
+    {id:'t1', category:'Taschen', name:'Steak Tasche', note:'', price:10.00},
+    {id:'t2', category:'Taschen', name:'Kebap Tasche', note:'', price:8.00},
+    {id:'t3', category:'Taschen', name:'Chicken-Gemüse Tasche', note:'', price:8.00},
+    {id:'t4', category:'Taschen', name:'Veggie Tasche', note:'mit gebratenem Gemüse', price:8.00},
+    {id:'t5', category:'Taschen', name:'Falafel Tasche', note:'', price:8.00},
+    {id:'t6', category:'Taschen', name:'Chilli-Cheese Tasche', note:'', price:8.00},
+    {id:'t7', category:'Taschen', name:'Lahmacun', note:'mit Dönerfleisch', price:10.00},
+    {id:'k1', category:'Klassiker & Extras', name:'Berliner Teller', note:'', price:13.00},
+    {id:'k2', category:'Klassiker & Extras', name:'Dürüm', note:'', price:9.00},
+    {id:'k3', category:'Klassiker & Extras', name:'Portion Pommes', note:'', price:4.00},
+    {id:'k4', category:'Klassiker & Extras', name:'Chilli-Cheese Nuggets', note:'', price:4.00},
+    {id:'k5', category:'Klassiker & Extras', name:'Kebap Box', note:'', price:8.00},
+    {id:'k6', category:'Klassiker & Extras', name:'Chicken Wings', note:'', price:5.00},
+    {id:'k7', category:'Klassiker & Extras', name:'Chicken Strips', note:'', price:5.00},
+  ];
+
+  let items = [];
+  const listEl = document.getElementById('menuItemsList');
+  const statusEl = document.getElementById('menuStatus');
+  const saveMsgEl = document.getElementById('saveMenuMsg');
+
+  function renderList(){
+    listEl.innerHTML = '';
+    items.forEach((item) => {
+      const row = document.createElement('div');
+      row.className = 'menu-item-row';
+
+      if(item.photo){
+        const img = document.createElement('img');
+        img.src = item.photo;
+        row.appendChild(img);
+      }
+
+      const info = document.createElement('div');
+      info.className = 'mi-info';
+      const nameEl = document.createElement('div');
+      nameEl.className = 'mi-name';
+      nameEl.textContent = item.name + (item.note ? ' — ' + item.note : '');
+      const catEl = document.createElement('div');
+      catEl.className = 'mi-cat';
+      catEl.textContent = item.category;
+      info.appendChild(nameEl);
+      info.appendChild(catEl);
+      row.appendChild(info);
+
+      const priceInput = document.createElement('input');
+      priceInput.type = 'number';
+      priceInput.step = '0.10';
+      priceInput.className = 'mi-price-input';
+      priceInput.value = item.price;
+      priceInput.addEventListener('input', () => {
+        item.price = parseFloat(priceInput.value) || 0;
+      });
+      row.appendChild(priceInput);
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'mi-delete';
+      delBtn.type = 'button';
+      delBtn.innerHTML = '&times;';
+      delBtn.title = 'Löschen';
+      delBtn.addEventListener('click', () => {
+        items = items.filter(i => i.id !== item.id);
+        renderList();
+      });
+      row.appendChild(delBtn);
+
+      listEl.appendChild(row);
+    });
+  }
+
+  function resizePhoto(file, callback){
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 300;
+        const scale = Math.min(1, maxW / img.width);
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        callback(canvas.toDataURL('image/jpeg', 0.72));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Load current live menu (or fall back to defaults shown on the site right now)
+  fetch('/.netlify/functions/menu')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      if(data && Array.isArray(data.items) && data.items.length){
+        items = data.items;
+        statusEl.textContent = 'Aktuelle Speisekarte geladen (zuletzt geändert: ' +
+          (data.updatedAt ? new Date(data.updatedAt).toLocaleString('de-DE') : 'unbekannt') + ').';
+      } else {
+        items = DEFAULT_ITEMS.map(i => ({...i}));
+        statusEl.textContent = 'Noch keine gespeicherten Änderungen — die Standard-Speisekarte wird angezeigt.';
+      }
+      renderList();
+    })
+    .catch(() => {
+      items = DEFAULT_ITEMS.map(i => ({...i}));
+      statusEl.innerHTML = '⚠️ Die Live-Funktion ist noch nicht erreichbar (das ist normal direkt nach dem ersten Hochladen — es kann ein paar Minuten dauern). Die Standard-Speisekarte wird angezeigt.';
+      renderList();
+    });
+
+  document.getElementById('newItemPhoto').addEventListener('change', (e) => {
+    const label = document.getElementById('newItemPhotoLabel');
+    if(e.target.files && e.target.files[0]){
+      label.textContent = '✅ ' + e.target.files[0].name;
+    }
+  });
+
+  document.getElementById('addItemBtn').addEventListener('click', () => {
+    const category = document.getElementById('newItemCategory').value;
+    const name = document.getElementById('newItemName').value.trim();
+    const note = document.getElementById('newItemNote').value.trim();
+    const price = parseFloat(document.getElementById('newItemPrice').value);
+    const photoInput = document.getElementById('newItemPhoto');
+
+    if(!name || isNaN(price)){
+      alert('Bitte mindestens einen Namen und einen Preis angeben.');
+      return;
+    }
+
+    function pushItem(photoDataUrl){
+      items.push({
+        id: 'item_' + Date.now(),
+        category, name, note, price,
+        photo: photoDataUrl || null,
+      });
+      renderList();
+      document.getElementById('newItemName').value = '';
+      document.getElementById('newItemNote').value = '';
+      document.getElementById('newItemPrice').value = '';
+      photoInput.value = '';
+      document.getElementById('newItemPhotoLabel').textContent = '📷 Foto hinzufügen (optional)';
+    }
+
+    if(photoInput.files && photoInput.files[0]){
+      resizePhoto(photoInput.files[0], pushItem);
+    } else {
+      pushItem(null);
+    }
+  });
+
+  document.getElementById('saveMenuBtn').addEventListener('click', () => {
+    saveMsgEl.textContent = 'Speichere …';
+    saveMsgEl.style.color = 'var(--muted)';
+    fetch('/.netlify/functions/menu', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: PASSWORD, items }),
+    })
+      .then(r => r.json().then(body => ({ ok: r.ok, body })))
+      .then(({ ok, body }) => {
+        if(ok){
+          saveMsgEl.textContent = '✅ Gespeichert! Alle Besucher sehen die neue Speisekarte jetzt (Aktualisierung kann bis zu 1 Minute dauern).';
+          saveMsgEl.style.color = '#7fd8d3';
+        } else {
+          saveMsgEl.textContent = '❌ ' + (body.error || 'Fehler beim Speichern.');
+          saveMsgEl.style.color = '#ffb3a0';
+        }
+      })
+      .catch(() => {
+        saveMsgEl.textContent = '❌ Konnte die Änderungen nicht speichern. Bitte Internetverbindung prüfen und erneut versuchen.';
+        saveMsgEl.style.color = '#ffb3a0';
+      });
+  });
+})();
+
 </script>
 
 </body>

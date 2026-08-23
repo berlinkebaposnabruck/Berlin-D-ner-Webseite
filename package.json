@@ -1,0 +1,9 @@
+{
+  "name": "berlin-doener-osnabrueck",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Website for Made in Berlin Döner Osnabrück, with a Netlify Function that stores the live menu (prices, items, photos) so staff edits show up for every visitor.",
+  "dependencies": {
+    "@netlify/blobs": "^7.3.0"
+  }
+}
