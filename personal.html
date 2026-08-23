@@ -311,6 +311,47 @@ body{
 </style>
 
 <script>
+// ============================================================
+// SUPABASE CONFIG — must match the values used in index.html.
+// ============================================================
+const SUPABASE_URL = 'https://owgmnwwuvxxdpkrkconw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CJ9D7FawNaOuKoqEeX05Ow_01-tdJ25';
+
+async function safeGet(key) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}&select=value`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.length ? rows[0].value : null;
+  } catch { return null; }
+}
+async function safeSet(key, value) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
+    });
+    return res.ok;
+  } catch { return false; }
+}
+async function safeListPrefix(prefix, limit = 100) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.desc&limit=${limit}`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
 // If opened inside the in-page "Personal" window (an iframe on index.html),
 // make the back link close that window instead of navigating the iframe itself.
 (function(){
@@ -501,24 +542,16 @@ resetBtn.addEventListener('click', ()=>{
   }
 
   // Load current live menu (or fall back to defaults shown on the site right now)
-  fetch('/.netlify/functions/menu')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if(data && Array.isArray(data.items) && data.items.length){
-        items = data.items;
-        statusEl.textContent = 'Aktuelle Speisekarte geladen (zuletzt geändert: ' +
-          (data.updatedAt ? new Date(data.updatedAt).toLocaleString('de-DE') : 'unbekannt') + ').';
-      } else {
-        items = DEFAULT_ITEMS.map(i => ({...i}));
-        statusEl.textContent = 'Noch keine gespeicherten Änderungen — die Standard-Speisekarte wird angezeigt.';
-      }
-      renderList();
-    })
-    .catch(() => {
+  safeGet('menu').then(v => {
+    if(v && Array.isArray(v.items) && v.items.length){
+      items = v.items;
+      statusEl.textContent = 'Aktuelle Speisekarte geladen.';
+    } else {
       items = DEFAULT_ITEMS.map(i => ({...i}));
-      statusEl.innerHTML = '⚠️ Die Live-Funktion ist noch nicht erreichbar (das ist normal direkt nach dem ersten Hochladen — es kann ein paar Minuten dauern). Die Standard-Speisekarte wird angezeigt.';
-      renderList();
-    });
+      statusEl.textContent = 'Noch keine gespeicherten Änderungen — die Standard-Speisekarte wird angezeigt.';
+    }
+    renderList();
+  });
 
   document.getElementById('newItemPhoto').addEventListener('change', (e) => {
     const label = document.getElementById('newItemPhotoLabel');
@@ -563,25 +596,15 @@ resetBtn.addEventListener('click', ()=>{
   document.getElementById('saveMenuBtn').addEventListener('click', () => {
     saveMsgEl.textContent = 'Speichere …';
     saveMsgEl.style.color = 'var(--muted)';
-    fetch('/.netlify/functions/menu', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password: PASSWORD, items }),
-    })
-      .then(r => r.json().then(body => ({ ok: r.ok, body })))
-      .then(({ ok, body }) => {
-        if(ok){
-          saveMsgEl.textContent = '✅ Gespeichert! Alle Besucher sehen die neue Speisekarte jetzt (Aktualisierung kann bis zu 1 Minute dauern).';
-          saveMsgEl.style.color = '#7fd8d3';
-        } else {
-          saveMsgEl.textContent = '❌ ' + (body.error || 'Fehler beim Speichern.');
-          saveMsgEl.style.color = '#ffb3a0';
-        }
-      })
-      .catch(() => {
-        saveMsgEl.textContent = '❌ Konnte die Änderungen nicht speichern. Bitte Internetverbindung prüfen und erneut versuchen.';
+    safeSet('menu', { items }).then(ok => {
+      if(ok){
+        saveMsgEl.textContent = '✅ Gespeichert! Alle Besucher sehen die neue Speisekarte jetzt.';
+        saveMsgEl.style.color = '#7fd8d3';
+      } else {
+        saveMsgEl.textContent = '❌ Konnte die Änderungen nicht speichern. Bitte Internetverbindung/Supabase-Konfiguration prüfen.';
         saveMsgEl.style.color = '#ffb3a0';
-      });
+      }
+    });
   });
 })();
 
@@ -593,41 +616,20 @@ resetBtn.addEventListener('click', ()=>{
   const saveBtn = document.getElementById('saveHoursBtn');
   const msgEl = document.getElementById('saveHoursMsg');
 
-  fetch('/.netlify/functions/site-data?key=hours')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      const v = (data && data.value) || {};
-      moDoInput.value = v.moDo || '11:00 – 23:00';
-      frSaInput.value = v.frSa || '11:00 – 05:00';
-      soInput.value = v.so || '11:00 – 23:00';
-    })
-    .catch(() => {
-      moDoInput.value = '11:00 – 23:00';
-      frSaInput.value = '11:00 – 05:00';
-      soInput.value = '11:00 – 23:00';
-    });
+  safeGet('hours').then(v => {
+    v = v || {};
+    moDoInput.value = v.moDo || '11:00 – 23:00';
+    frSaInput.value = v.frSa || '11:00 – 05:00';
+    soInput.value = v.so || '11:00 – 23:00';
+  });
 
   saveBtn.addEventListener('click', () => {
     msgEl.textContent = 'Speichere …';
     msgEl.style.color = 'var(--muted)';
-    fetch('/.netlify/functions/site-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        key: 'hours',
-        password: PASSWORD,
-        value: { moDo: moDoInput.value, frSa: frSaInput.value, so: soInput.value },
-      }),
-    })
-      .then(r => r.ok)
-      .then(ok => {
-        msgEl.textContent = ok ? '✅ Gespeichert! Für alle Besucher live.' : '❌ Fehler beim Speichern.';
-        msgEl.style.color = ok ? '#7fd8d3' : '#ffb3a0';
-      })
-      .catch(() => {
-        msgEl.textContent = '❌ Konnte nicht speichern. Internetverbindung prüfen.';
-        msgEl.style.color = '#ffb3a0';
-      });
+    safeSet('hours', { moDo: moDoInput.value, frSa: frSaInput.value, so: soInput.value }).then(ok => {
+      msgEl.textContent = ok ? '✅ Gespeichert! Für alle Besucher live.' : '❌ Fehler beim Speichern.';
+      msgEl.style.color = ok ? '#7fd8d3' : '#ffb3a0';
+    });
   });
 })();
 
@@ -638,36 +640,19 @@ resetBtn.addEventListener('click', ()=>{
   const saveBtn = document.getElementById('saveAnnounceBtn');
   const msgEl = document.getElementById('saveAnnounceMsg');
 
-  fetch('/.netlify/functions/site-data?key=announcement')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      const v = (data && data.value) || {};
-      textEl.value = v.text || '';
-      activeEl.checked = !!v.active;
-    })
-    .catch(() => {});
+  safeGet('announcement').then(v => {
+    v = v || {};
+    textEl.value = v.text || '';
+    activeEl.checked = !!v.active;
+  });
 
   saveBtn.addEventListener('click', () => {
     msgEl.textContent = 'Speichere …';
     msgEl.style.color = 'var(--muted)';
-    fetch('/.netlify/functions/site-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        key: 'announcement',
-        password: PASSWORD,
-        value: { text: textEl.value, active: activeEl.checked },
-      }),
-    })
-      .then(r => r.ok)
-      .then(ok => {
-        msgEl.textContent = ok ? '✅ Gespeichert! Für alle Besucher live.' : '❌ Fehler beim Speichern.';
-        msgEl.style.color = ok ? '#7fd8d3' : '#ffb3a0';
-      })
-      .catch(() => {
-        msgEl.textContent = '❌ Konnte nicht speichern. Internetverbindung prüfen.';
-        msgEl.style.color = '#ffb3a0';
-      });
+    safeSet('announcement', { text: textEl.value, active: activeEl.checked }).then(ok => {
+      msgEl.textContent = ok ? '✅ Gespeichert! Für alle Besucher live.' : '❌ Fehler beim Speichern.';
+      msgEl.style.color = ok ? '#7fd8d3' : '#ffb3a0';
+    });
   });
 })();
 
@@ -676,30 +661,25 @@ resetBtn.addEventListener('click', ()=>{
   const statusEl = document.getElementById('messagesStatus');
   const listEl = document.getElementById('messagesList');
 
-  fetch('/.netlify/functions/site-data?key=messages')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      const items = (data && Array.isArray(data.items)) ? data.items : [];
-      if(!items.length){
-        statusEl.textContent = 'Noch keine Nachrichten von Kunden.';
-        return;
-      }
-      statusEl.textContent = items.length + ' Nachricht(en)';
-      items.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'msg-item';
-        const date = item.receivedAt ? new Date(item.receivedAt).toLocaleString('de-DE') : '';
-        div.innerHTML =
-          '<div class="msg-meta"><b>' + (item.name || 'Unbekannt') + '</b> · ' +
-          (item.email || '') + ' · ' + date + '</div>' +
-          '<div class="msg-text"></div>';
-        div.querySelector('.msg-text').textContent = item.message || '';
-        listEl.appendChild(div);
-      });
-    })
-    .catch(() => {
-      statusEl.textContent = '⚠️ Nachrichten konnten nicht geladen werden.';
+  safeListPrefix('contactmsg:').then(rows => {
+    if(!rows.length){
+      statusEl.textContent = 'Noch keine Nachrichten von Kunden.';
+      return;
+    }
+    statusEl.textContent = rows.length + ' Nachricht(en)';
+    rows.forEach(row => {
+      const item = row.value || {};
+      const div = document.createElement('div');
+      div.className = 'msg-item';
+      const date = item.ts ? new Date(item.ts).toLocaleString('de-DE') : (row.updated_at ? new Date(row.updated_at).toLocaleString('de-DE') : '');
+      div.innerHTML =
+        '<div class="msg-meta"><b>' + (item.name || 'Unbekannt') + '</b> · ' +
+        (item.email || '') + ' · ' + date + '</div>' +
+        '<div class="msg-text"></div>';
+      div.querySelector('.msg-text').textContent = item.message || '';
+      listEl.appendChild(div);
     });
+  });
 })();
 
 </script>

@@ -875,42 +875,82 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
 </footer>
 
 <script>
+// ============================================================
+// SUPABASE CONFIG — replace these two lines with your own project's
+// values (Supabase Dashboard → Project Settings → API), then this
+// entire site works on ANY static host (GitHub Pages, Netlify, etc.)
+// with zero backend code of your own to maintain.
+// ============================================================
+const SUPABASE_URL = 'https://owgmnwwuvxxdpkrkconw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_CJ9D7FawNaOuKoqEeX05Ow_01-tdJ25';
+// Optional — free real-email delivery for the contact form via web3forms.com.
+// Leave as-is to skip email (messages are still saved and visible in the staff panel).
+const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_KEY';
+
+async function safeGet(key) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=eq.${encodeURIComponent(key)}&select=value`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    return rows.length ? rows[0].value : null;
+  } catch { return null; }
+}
+async function safeSet(key, value) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${SUPABASE_KEY}`,
+        'Content-Type': 'application/json',
+        Prefer: 'resolution=merge-duplicates',
+      },
+      body: JSON.stringify({ key, value, updated_at: new Date().toISOString() }),
+    });
+    return res.ok;
+  } catch { return false; }
+}
+async function safeListPrefix(prefix, limit = 100) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/kv_store?key=like.${encodeURIComponent(prefix)}*&select=key,value,updated_at&order=updated_at.desc&limit=${limit}`, {
+      headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch { return []; }
+}
+
 // ---- Live opening hours: staff can update these, everyone sees them ----
 window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:00 – 23:00' };
 (function(){
-  fetch('/.netlify/functions/site-data?key=hours')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if(!data || !data.value) return;
-      const v = data.value;
-      if(v.moDo) document.getElementById('hoursMoDo').textContent = v.moDo;
-      if(v.frSa) document.getElementById('hoursFrSa').textContent = v.frSa;
-      if(v.so) document.getElementById('hoursSo').textContent = v.so;
-      window.__bdHours = { moDo: v.moDo || window.__bdHours.moDo, frSa: v.frSa || window.__bdHours.frSa, so: v.so || window.__bdHours.so };
-    })
-    .catch(() => {});
+  safeGet('hours').then(v => {
+    if(!v) return;
+    if(v.moDo) document.getElementById('hoursMoDo').textContent = v.moDo;
+    if(v.frSa) document.getElementById('hoursFrSa').textContent = v.frSa;
+    if(v.so) document.getElementById('hoursSo').textContent = v.so;
+    window.__bdHours = { moDo: v.moDo || window.__bdHours.moDo, frSa: v.frSa || window.__bdHours.frSa, so: v.so || window.__bdHours.so };
+  });
 })();
 
 // ---- Live announcement banner: staff can post a temporary message ----
 (function(){
-  fetch('/.netlify/functions/site-data?key=announcement')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if(!data || !data.value || !data.value.active || !data.value.text) return;
-      const bar = document.createElement('div');
-      bar.id = 'announceBar';
-      bar.innerHTML = '<span>📣 ' + data.value.text.replace(/</g,'&lt;') + '</span><button type="button" aria-label="Schließen">&times;</button>';
-      document.body.appendChild(bar);
-      const nav = document.querySelector('.nav');
-      function pushNavDown(){ if(nav) nav.style.top = bar.offsetHeight + 'px'; }
-      pushNavDown();
-      window.addEventListener('resize', pushNavDown);
-      bar.querySelector('button').addEventListener('click', () => {
-        bar.remove();
-        if(nav) nav.style.top = '0';
-      });
-    })
-    .catch(() => {});
+  safeGet('announcement').then(v => {
+    if(!v || !v.active || !v.text) return;
+    const bar = document.createElement('div');
+    bar.id = 'announceBar';
+    bar.innerHTML = '<span>📣 ' + v.text.replace(/</g,'&lt;') + '</span><button type="button" aria-label="Schließen">&times;</button>';
+    document.body.appendChild(bar);
+    const nav = document.querySelector('.nav');
+    function pushNavDown(){ if(nav) nav.style.top = bar.offsetHeight + 'px'; }
+    pushNavDown();
+    window.addEventListener('resize', pushNavDown);
+    bar.querySelector('button').addEventListener('click', () => {
+      bar.remove();
+      if(nav) nav.style.top = '0';
+    });
+  });
 })();
 
 // ---- Simple assistant (rule-based FAQ, no external AI service required) ----
@@ -986,14 +1026,14 @@ window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:0
   });
 })();
 
-// ---- Contact form: sends the message to the staff panel (and by email if configured) ----
+// ---- Contact form: saves to Supabase (staff panel) and emails via web3forms if configured ----
 (function(){
   const form = document.getElementById('kontaktForm');
   if(!form) return;
   const msgEl = document.getElementById('kMsg');
   const btn = document.getElementById('kSubmitBtn');
 
-  form.addEventListener('submit', (e) => {
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
     const name = document.getElementById('kName').value.trim();
     const email = document.getElementById('kEmail').value.trim();
@@ -1004,28 +1044,35 @@ window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:0
     msgEl.textContent = 'Wird gesendet …';
     msgEl.className = 'kontakt-msg';
 
-    fetch('/.netlify/functions/site-data', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ key: 'messages', value: { name, email, message } }),
-    })
-      .then(r => r.ok)
-      .then(ok => {
-        btn.disabled = false;
-        if(ok){
-          msgEl.textContent = '✅ Danke! Deine Nachricht ist angekommen.';
-          msgEl.className = 'kontakt-msg ok';
-          form.reset();
-        } else {
-          msgEl.textContent = '❌ Konnte nicht gesendet werden. Bitte später erneut versuchen.';
-          msgEl.className = 'kontakt-msg err';
-        }
-      })
-      .catch(() => {
-        btn.disabled = false;
-        msgEl.textContent = '❌ Konnte nicht gesendet werden. Bitte Internetverbindung prüfen.';
-        msgEl.className = 'kontakt-msg err';
-      });
+    const key = 'contactmsg:' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+    const saved = await safeSet(key, { name, email, message, ts: Date.now() });
+
+    let emailed = true;
+    if(WEB3FORMS_KEY && WEB3FORMS_KEY !== 'YOUR_WEB3FORMS_KEY'){
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            access_key: WEB3FORMS_KEY,
+            subject: 'Neue Nachricht von der Website — ' + name,
+            from_name: 'Berlin Döner Website',
+            name, email, message,
+          }),
+        });
+        emailed = res.ok;
+      } catch(err) { emailed = false; }
+    }
+
+    btn.disabled = false;
+    if(saved){
+      msgEl.textContent = '✅ Danke! Deine Nachricht ist angekommen.';
+      msgEl.className = 'kontakt-msg ok';
+      form.reset();
+    } else {
+      msgEl.textContent = '❌ Konnte nicht gesendet werden. Bitte später erneut versuchen.';
+      msgEl.className = 'kontakt-msg err';
+    }
   });
 })();
 
@@ -1070,16 +1117,13 @@ window.__bdHours = { moDo: '11:00 – 23:00', frSa: '11:00 – 05:00', so: '11:0
     });
   }
 
-  fetch('/.netlify/functions/menu')
-    .then(r => r.ok ? r.json() : null)
-    .then(data => {
-      if(!data || !Array.isArray(data.items) || !data.items.length) return; // keep static fallback
-      const taschen = data.items.filter(i => i.category === 'Taschen');
-      const klassiker = data.items.filter(i => i.category !== 'Taschen');
-      renderColumn(document.getElementById('menuListTaschen'), taschen);
-      renderColumn(document.getElementById('menuListKlassiker'), klassiker);
-    })
-    .catch(() => { /* keep static fallback, e.g. function not deployed yet */ });
+  safeGet('menu').then(v => {
+    if(!v || !Array.isArray(v.items) || !v.items.length) return; // keep static fallback
+    const taschen = v.items.filter(i => i.category === 'Taschen');
+    const klassiker = v.items.filter(i => i.category !== 'Taschen');
+    renderColumn(document.getElementById('menuListTaschen'), taschen);
+    renderColumn(document.getElementById('menuListKlassiker'), klassiker);
+  });
 })();
 
 // ---- Personal (staff) area opens in an in-page window instead of a new tab ----
