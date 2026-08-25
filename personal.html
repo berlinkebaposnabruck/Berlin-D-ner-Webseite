@@ -55,12 +55,24 @@ body{
   position:relative;
   box-shadow:0 30px 70px rgba(0,0,0,0.5);
 }
-.login-card:before{
+.lock-badge{
   content:"🔒";
   position:absolute;top:-26px;left:50%;transform:translateX(-50%) rotate(-4deg);
   width:52px;height:52px;background:var(--red);border-radius:50%;
   display:flex;align-items:center;justify-content:center;font-size:1.4rem;
-  box-shadow:0 8px 20px rgba(225,75,50,0.5);
+  box-shadow:0 8px 20px rgba(216,30,38,0.5);
+  transition:background .3s ease;
+}
+.lock-badge.unlocked{
+  background:#3ecf8e;
+  box-shadow:0 8px 20px rgba(62,207,142,0.5);
+  animation:lockPop .55s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes lockPop{
+  0%{ transform:translateX(-50%) rotate(-4deg) scale(1); }
+  35%{ transform:translateX(-50%) rotate(14deg) scale(1.25); }
+  60%{ transform:translateX(-50%) rotate(-8deg) scale(0.95); }
+  100%{ transform:translateX(-50%) rotate(0deg) scale(1); }
 }
 
 /* ---------- OTP-STYLE LOGIN (old branding text + new box mechanic) ---------- */
@@ -214,7 +226,13 @@ body{
 }
 .tab-btn:hover{color:var(--chalk);}
 .tab-btn.active{background:var(--teal);border-color:var(--teal);color:var(--chalk);}
-.tab-content{display:none;}
+.tab-content{display:none;animation:tabFadeIn .28s ease;}
+@keyframes tabFadeIn{
+  from{ opacity:0; transform:translateY(6px); }
+  to{ opacity:1; transform:translateY(0); }
+}
+.login-screen{transition:opacity .25s ease;}
+.dash-wrap{animation:tabFadeIn .35s ease;}
 .tab-content.active{display:block;}
 
 /* ---------- GALLERY MANAGEMENT ---------- */
@@ -258,10 +276,11 @@ body{
 
 <div class="login-screen" id="loginScreen">
   <div class="login-card otp-card">
+    <div class="lock-badge" id="lockBadge">🔒</div>
     <div class="otp-eyebrow">Nur für's Team</div>
     <h1 class="otp-title">Personal-Login</h1>
     <div class="otp-boxes" id="otpBoxes"></div>
-    <input type="tel" inputmode="numeric" id="passInput" class="otp-hidden-input" autocomplete="off" maxlength="20" aria-label="Zugangscode">
+    <input type="tel" inputmode="numeric" id="passInput" class="otp-hidden-input" autocomplete="off" maxlength="20" aria-label="Zugangscode" autofocus>
     <div class="otp-status" id="otpStatus">
       <span class="otp-status-dot" id="otpStatusDot"></span>
       <span id="otpStatusText"></span>
@@ -292,9 +311,9 @@ body{
   <div class="tab-content active" data-tab-content="uebersicht">
     <div class="stat-grid">
       <div class="stat-card">
-        <span class="stat-label">Seitenaufrufe</span>
+        <span class="stat-label">Besucher</span>
         <span class="stat-num" id="statViews">0</span>
-        <span class="stat-sub">auf diesem Gerät</span>
+        <span class="stat-sub">eindeutige Geräte (nicht Aufrufe)</span>
       </div>
       <div class="stat-card">
         <span class="stat-label">Bestell-Klicks</span>
@@ -924,6 +943,11 @@ function resetOtp(){
   renderOtpBoxes();
   otpStatusEl.classList.remove('verified');
   otpStatusTextEl.textContent = '';
+  const lockBadge = document.getElementById('lockBadge');
+  if(lockBadge){
+    lockBadge.textContent = '🔒';
+    lockBadge.classList.remove('unlocked');
+  }
 }
 
 otpBoxesEl.addEventListener('click', () => passInput.focus());
@@ -953,7 +977,12 @@ function checkOtp(){
   if(passInput.value === CURRENT_PASSWORD){
     otpStatusEl.classList.add('verified');
     otpStatusTextEl.textContent = 'Code verifiziert';
-    setTimeout(showDashboard, 500);
+    const lockBadge = document.getElementById('lockBadge');
+    if(lockBadge){
+      lockBadge.textContent = '🔓';
+      lockBadge.classList.add('unlocked');
+    }
+    setTimeout(showDashboard, 550);
   } else {
     otpBoxesEl.classList.add('shake-error');
     otpStatusTextEl.textContent = 'Falscher Code — bitte bei der Schichtleitung nachfragen.';
@@ -967,7 +996,14 @@ function checkOtp(){
 
 // No auto-login: the login screen (and a fresh code) is required on every visit.
 showLogin();
-setTimeout(() => passInput.focus(), 50);
+// iOS/Safari only opens the keyboard on focus() if it happens close to a user
+// gesture or the initial page paint — try several times to maximize the odds.
+passInput.focus();
+requestAnimationFrame(() => passInput.focus());
+window.addEventListener('pageshow', () => passInput.focus());
+document.addEventListener('visibilitychange', () => { if(!document.hidden) passInput.focus(); });
+setTimeout(() => passInput.focus(), 120);
+setTimeout(() => passInput.focus(), 400);
 
 logoutBtn.addEventListener('click', ()=>{
   showLogin();
@@ -975,7 +1011,7 @@ logoutBtn.addEventListener('click', ()=>{
 
 resetBtn.addEventListener('click', ()=>{
   const keys = ['bd_click_lieferando','bd_click_wolt','bd_click_uber','bd_click_route','bd_pageviews',
-    'bd_device_mobile','bd_device_desktop'];
+    'bd_device_mobile','bd_device_desktop','bd_device_counted'];
   Object.keys(LANG_LABELS).forEach(code => keys.push('bd_lang_count_' + code));
   Object.keys(FAQ_LABELS).forEach(key => keys.push('bd_faq_' + key));
   keys.forEach(k => setNum(k, 0));
