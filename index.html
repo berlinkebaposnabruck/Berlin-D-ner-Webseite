@@ -248,18 +248,16 @@ header.nav{
 .order-modal-item:hover .order-modal-btn .arrow{transform:translateX(4px);}
 @media (max-width:900px){
   .nav-links{
-    display:flex;flex-direction:column;gap:0;
+    display:none;flex-direction:column;gap:0;
     position:fixed;top:0;left:0;right:0;bottom:0;
     padding-top:var(--header-h, 132px);
     background:
       radial-gradient(circle at 85% 8%, rgba(216,30,38,0.16), transparent 55%),
       linear-gradient(165deg, var(--ink-2) 0%, var(--ink) 65%);
     z-index:90;
-    visibility:hidden;opacity:0;
-    transition:opacity .3s ease, visibility .3s;
     overflow-y:auto;overflow-x:hidden;
   }
-  .nav-links.open{visibility:visible;opacity:1;}
+  .nav-links.open{display:flex;}
   .nav-links:before{
     content:"BERLIN";position:absolute;top:14%;left:-6%;
     font-family:'Anton',sans-serif;font-size:7rem;color:rgba(244,239,226,0.03);
