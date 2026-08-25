@@ -62,21 +62,64 @@ body{
   display:flex;align-items:center;justify-content:center;font-size:1.4rem;
   box-shadow:0 8px 20px rgba(225,75,50,0.5);
 }
-.login-tag{
-  font-family:'Permanent Marker',cursive;color:var(--amber);
-  text-align:center;font-size:1rem;margin:14px 0 4px;transform:rotate(-2deg);
+
+/* ---------- OTP-STYLE LOGIN ---------- */
+.otp-eyebrow{
+  text-align:center;font-size:0.72rem;font-weight:800;letter-spacing:0.22em;
+  color:var(--muted);text-transform:uppercase;margin:16px 0 10px;
 }
-.login-title{
+.otp-title{
   font-family:'Anton',sans-serif;text-transform:uppercase;text-align:center;
-  font-size:1.7rem;margin:0 0 26px;letter-spacing:0.5px;
+  font-size:1.7rem;margin:0 0 10px;letter-spacing:0.5px;
 }
+.otp-sub{
+  text-align:center;color:var(--muted);font-size:0.85rem;line-height:1.5;
+  margin:0 0 28px;
+}
+.otp-boxes{
+  display:flex;justify-content:center;gap:8px;position:relative;cursor:text;
+}
+.otp-box{
+  width:44px;height:54px;border-radius:10px;
+  background:var(--ink);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;color:var(--chalk);
+  transition:border-color .2s, box-shadow .2s, background .2s;
+}
+.otp-box.filled{
+  border-color:#3ecf8e;background:rgba(62,207,142,0.08);
+  box-shadow:0 0 0 3px rgba(62,207,142,0.12);
+  color:#7fe3b4;
+}
+.otp-box.bounce{ animation:otpBounce .38s ease; }
+@keyframes otpBounce{
+  0%{ transform:translateY(0) scale(1); }
+  35%{ transform:translateY(-14px) scale(1.06); }
+  65%{ transform:translateY(2px) scale(0.98); }
+  100%{ transform:translateY(0) scale(1); }
+}
+.otp-boxes.shake-error .otp-box{
+  border-color:var(--red-hi);background:rgba(255,106,74,0.1);color:#ffb3a0;
+  animation:otpShake .45s ease;
+}
+@keyframes otpShake{
+  0%,100%{ transform:translateX(0); }
+  20%{ transform:translateX(-8px); }
+  40%{ transform:translateX(7px); }
+  60%{ transform:translateX(-5px); }
+  80%{ transform:translateX(4px); }
+}
+.otp-hidden-input{
+  position:absolute;opacity:0;height:1px;width:1px;pointer-events:none;
+}
+.otp-status{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  margin-top:22px;font-size:0.82rem;font-weight:700;min-height:18px;
+}
+.otp-status-dot{width:8px;height:8px;border-radius:50%;background:transparent;flex-shrink:0;}
+.otp-status.verified .otp-status-dot{background:#3ecf8e;box-shadow:0 0 0 3px rgba(62,207,142,0.18);}
+.otp-status.verified #otpStatusText{color:#7fe3b4;}
 .field-label{display:block;font-size:0.75rem;text-transform:uppercase;letter-spacing:0.08em;color:var(--muted);margin-bottom:8px;text-align:center;}
-.pass-input{
-  width:100%;background:var(--ink);border:1px solid var(--line);border-radius:8px;
-  padding:16px;color:var(--chalk);font-size:1.4rem;letter-spacing:0.4em;text-align:center;
-  font-family:inherit;
-}
-.pass-input:focus{outline:none;border-color:var(--teal-hi);}
 .submit-btn{
   width:100%;margin-top:18px;background:var(--teal);color:var(--chalk);border:none;
   padding:15px;border-radius:8px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;
@@ -214,15 +257,17 @@ body{
 </div>
 
 <div class="login-screen" id="loginScreen">
-  <div class="login-card">
-    <div class="login-tag">Nur für's Team</div>
-    <h1 class="login-title">Personal-Login</h1>
-    <form id="loginForm">
-      <label class="field-label" for="passInput">Passwort</label>
-      <input class="pass-input" type="password" id="passInput" inputmode="numeric" autocomplete="current-password" placeholder="••••" maxlength="20">
-      <button class="submit-btn" type="submit">Anmelden</button>
-      <div class="login-msg" id="loginMsg"></div>
-    </form>
+  <div class="login-card otp-card">
+    <div class="otp-eyebrow">Sicherheitscheck</div>
+    <h1 class="otp-title">Code eingeben</h1>
+    <p class="otp-sub">Gib deinen Zugangscode ein, um dich als Team-Mitglied anzumelden.</p>
+    <div class="otp-boxes" id="otpBoxes"></div>
+    <input type="tel" inputmode="numeric" id="passInput" class="otp-hidden-input" autocomplete="off" maxlength="20" aria-label="Zugangscode">
+    <div class="otp-status" id="otpStatus">
+      <span class="otp-status-dot" id="otpStatusDot"></span>
+      <span id="otpStatusText"></span>
+    </div>
+    <div class="login-msg" id="loginMsg"></div>
     <div class="login-footer">Zugang nur für Mitarbeiter von Berlin Döner Osnabrück.</div>
   </div>
 </div>
@@ -505,6 +550,7 @@ async function safeListPrefix(prefix, limit = 100) {
 let CURRENT_PASSWORD = '0021'; // fallback default until Supabase value (if any) loads
 safeGet('staff_password').then(v => {
   if(v && typeof v.value === 'string' && v.value.length) CURRENT_PASSWORD = v.value;
+  if(typeof renderOtpBoxes === 'function') renderOtpBoxes();
 });
 
 // ---- Tab switching ----
@@ -529,7 +575,6 @@ function setNum(key, val){
 
 const loginScreen = document.getElementById('loginScreen');
 const dashWrap = document.getElementById('dashWrap');
-const loginForm = document.getElementById('loginForm');
 const passInput = document.getElementById('passInput');
 const loginMsg = document.getElementById('loginMsg');
 const logoutBtn = document.getElementById('logoutBtn');
@@ -851,30 +896,81 @@ function showDashboard(){
 function showLogin(){
   dashWrap.style.display = 'none';
   loginScreen.style.display = 'flex';
-  passInput.value = '';
+  resetOtp();
   loginMsg.classList.remove('show','ok','err');
 }
 
-let alreadyIn = false;
-try { alreadyIn = localStorage.getItem('bd_staff_logged_in') === '1'; } catch(e){}
-if (alreadyIn) showDashboard();
+// ---- OTP-style code entry: no persistent session — a fresh code is required every time ----
+const otpBoxesEl = document.getElementById('otpBoxes');
+const otpStatusEl = document.getElementById('otpStatus');
+const otpStatusTextEl = document.getElementById('otpStatusText');
 
-loginForm.addEventListener('submit', (e)=>{
-  e.preventDefault();
-  loginMsg.classList.remove('show','ok','err');
-  if(passInput.value === CURRENT_PASSWORD){
-    try { localStorage.setItem('bd_staff_logged_in','1'); } catch(e){}
-    loginMsg.textContent = 'Willkommen zurück! Dienstplan wird geladen …';
-    loginMsg.classList.add('show','ok');
-    setTimeout(showDashboard, 400);
-  } else {
-    loginMsg.textContent = 'Falsches Passwort. Bitte bei der Schichtleitung nachfragen.';
-    loginMsg.classList.add('show','err');
+function otpLength(){
+  return (CURRENT_PASSWORD && CURRENT_PASSWORD.length) ? CURRENT_PASSWORD.length : 4;
+}
+
+function renderOtpBoxes(){
+  const n = otpLength();
+  otpBoxesEl.innerHTML = '';
+  for(let i = 0; i < n; i++){
+    const box = document.createElement('div');
+    box.className = 'otp-box';
+    otpBoxesEl.appendChild(box);
   }
+}
+renderOtpBoxes();
+
+function resetOtp(){
+  passInput.value = '';
+  renderOtpBoxes();
+  otpStatusEl.classList.remove('verified');
+  otpStatusTextEl.textContent = '';
+}
+
+otpBoxesEl.addEventListener('click', () => passInput.focus());
+
+passInput.addEventListener('input', () => {
+  const n = otpLength();
+  // keep only digits, respect current code length
+  passInput.value = passInput.value.replace(/\D/g, '').slice(0, n);
+  const chars = passInput.value.split('');
+  const boxes = otpBoxesEl.querySelectorAll('.otp-box');
+  boxes.forEach((box, i) => {
+    const wasFilled = box.classList.contains('filled');
+    const isFilled = i < chars.length;
+    box.textContent = isFilled ? '✓' : '';
+    box.classList.toggle('filled', isFilled);
+    if(isFilled && !wasFilled){
+      box.classList.remove('bounce');
+      void box.offsetWidth; // restart animation
+      box.classList.add('bounce');
+    }
+  });
+  if(chars.length === n) checkOtp();
 });
 
+function checkOtp(){
+  loginMsg.classList.remove('show','ok','err');
+  if(passInput.value === CURRENT_PASSWORD){
+    otpStatusEl.classList.add('verified');
+    otpStatusTextEl.textContent = 'Code verifiziert';
+    setTimeout(showDashboard, 500);
+  } else {
+    otpBoxesEl.classList.add('shake-error');
+    otpStatusTextEl.textContent = 'Falscher Code — bitte bei der Schichtleitung nachfragen.';
+    setTimeout(() => {
+      otpBoxesEl.classList.remove('shake-error');
+      resetOtp();
+      passInput.focus();
+    }, 700);
+  }
+}
+
+// No auto-login: the login screen (and a fresh code) is required on every visit.
+showLogin();
+setTimeout(() => passInput.focus(), 50);
+
 logoutBtn.addEventListener('click', ()=>{
-  try { localStorage.setItem('bd_staff_logged_in','0'); } catch(e){}
   showLogin();
 });
 
