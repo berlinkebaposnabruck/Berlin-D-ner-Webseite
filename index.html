@@ -99,9 +99,6 @@ header.nav{
 .nav-links a{opacity:0.82;transition:opacity .2s, color .2s;position:relative;}
 .nav-links a:hover{opacity:1;color:var(--amber);}
 .nav-right{display:flex;align-items:center;gap:10px;}
-.nav-order-full{display:none;}
-.nav-order-full .dd-btn{padding:9px 14px;font-size:0.74rem;}
-.nav-order-compact{display:block;}
 .nav-toggle{display:none;background:none;border:none;color:var(--chalk);font-size:2.2rem;cursor:pointer;line-height:1;padding:4px 6px;}
 .status-bar{
   display:flex;align-items:center;justify-content:center;gap:8px;
@@ -152,42 +149,67 @@ header.nav{
 }
 #cookieBar p{margin:0;font-size:0.82rem;color:var(--muted);line-height:1.5;flex:1;min-width:220px;}
 #cookieBar button{
-  background:var(--teal);color:var(--chalk);border:none;padding:11px 22px;border-radius:20px;
+  background:var(--red);color:var(--chalk);border:none;padding:11px 22px;border-radius:20px;
   font-weight:700;font-size:0.82rem;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.2s;
 }
-#cookieBar button:hover{background:var(--teal-deep);}
+#cookieBar button:hover{background:var(--red-hi);}
 #cookieBar.hide{opacity:0;transform:translateY(20px);transition:opacity .4s ease, transform .4s ease;}
 @keyframes cookieIn{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
-.order-trigger{position:relative;}
 .order-trigger-btn{
-  background:var(--teal);color:var(--chalk);padding:10px 16px;border-radius:3px;
+  background:var(--red);color:var(--chalk);padding:10px 18px;border-radius:3px;
   font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;
-  border:2px solid var(--teal);transition:.2s;display:inline-flex;align-items:center;gap:8px;cursor:pointer;
+  border:2px solid var(--red);transition:.2s;cursor:pointer;font-family:inherit;
 }
-.order-trigger-btn:hover{background:transparent;color:var(--teal);}
-.order-trigger-btn .caret{transition:transform .2s;font-size:0.7rem;}
-.order-trigger-btn.open .caret{transform:rotate(180deg);}
-.order-dropdown{
-  position:absolute;top:calc(100% + 12px);right:0;
-  background:var(--panel);border:1px solid var(--line);border-radius:10px;
-  padding:14px;display:flex;flex-direction:column;gap:10px;min-width:210px;
-  box-shadow:0 24px 50px rgba(0,0,0,0.55);
-  opacity:0;visibility:hidden;transform:translateY(-10px);
-  transition:opacity .2s ease, transform .2s ease, visibility .2s;
-  z-index:200;
+.order-trigger-btn:hover{background:transparent;color:var(--red-hi);border-color:var(--red-hi);}
+
+/* ---------- BESTELLEN MODAL ---------- */
+.order-modal-overlay{
+  position:fixed;inset:0;z-index:400;
+  background:rgba(6,6,10,0.8);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;visibility:hidden;transition:opacity .25s ease, visibility .25s;
 }
-.order-dropdown.open{opacity:1;visibility:visible;transform:translateY(0);}
-.dd-btn{
-  display:flex;align-items:center;justify-content:center;gap:9px;
-  padding:13px 16px;border-radius:6px;font-weight:800;font-size:0.85rem;
-  text-transform:uppercase;letter-spacing:0.04em;transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
-  cursor:pointer;border:none;font-family:inherit;
-  box-shadow:0 4px 14px rgba(0,0,0,0.35);
+.order-modal-overlay.open{opacity:1;visibility:visible;}
+.order-modal{
+  width:100%;max-width:380px;background:var(--panel);border:1px solid var(--line);
+  border-radius:18px;padding:38px 28px 32px;text-align:center;position:relative;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  transform:translateY(16px) scale(0.98);transition:transform .25s ease;
 }
-.dd-btn:hover{transform:translateY(-2px);filter:brightness(1.12) saturate(1.15);}
-.dd-lieferando{background:#FF8C00;color:#1a0d00;box-shadow:0 4px 18px rgba(255,140,0,0.45);}
-.dd-wolt{background:#00D4FF;color:#00232b;box-shadow:0 4px 18px rgba(0,212,255,0.45);}
-.dd-uber{background:#00D26A;color:#04240f;box-shadow:0 4px 18px rgba(0,210,106,0.45);}
+.order-modal-overlay.open .order-modal{transform:translateY(0) scale(1);}
+.order-modal-close{
+  position:absolute;top:14px;right:14px;background:none;border:none;
+  color:var(--muted);font-size:1.7rem;line-height:1;cursor:pointer;padding:6px;
+}
+.order-modal-close:hover{color:var(--chalk);}
+.order-modal-tagline{
+  color:var(--red-hi);font-weight:800;text-transform:uppercase;
+  font-size:0.78rem;letter-spacing:0.06em;margin-bottom:8px;
+}
+.order-modal-title{
+  font-family:'Anton',sans-serif;text-transform:uppercase;
+  font-size:1.6rem;margin:0 0 30px;letter-spacing:0.4px;
+}
+.order-modal-list{display:flex;flex-direction:column;gap:22px;align-items:center;}
+.order-modal-item{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;text-decoration:none;}
+.order-modal-icon{
+  width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:1.7rem;box-shadow:0 6px 18px rgba(0,0,0,0.35);
+}
+.order-modal-item.lieferando .order-modal-icon{background:#FF8C00;}
+.order-modal-item.wolt .order-modal-icon{background:#00D4FF;}
+.order-modal-item.uber .order-modal-icon{background:#00D26A;}
+.order-modal-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+  padding:15px;border-radius:8px;font-weight:800;text-transform:uppercase;
+  font-size:0.88rem;letter-spacing:0.03em;transition:transform .15s ease, filter .15s ease;
+}
+.order-modal-item.lieferando .order-modal-btn{background:#FF8C00;color:#1a0d00;box-shadow:0 4px 18px rgba(255,140,0,0.4);}
+.order-modal-item.wolt .order-modal-btn{background:#00D4FF;color:#00232b;box-shadow:0 4px 18px rgba(0,212,255,0.4);}
+.order-modal-item.uber .order-modal-btn{background:#00D26A;color:#04240f;box-shadow:0 4px 18px rgba(0,210,106,0.4);}
+.order-modal-item:hover .order-modal-btn{transform:translateY(-2px);filter:brightness(1.08);}
+.order-modal-btn .arrow{transition:transform .2s;}
+.order-modal-item:hover .order-modal-btn .arrow{transform:translateX(4px);}
 @media (max-width:900px){
   .nav-links{
     display:flex;flex-direction:column;gap:0;
@@ -198,17 +220,14 @@ header.nav{
   .nav-links.open{max-height:360px;overflow-y:auto;}
   .nav-links a{padding:16px 28px;border-bottom:1px solid var(--line);opacity:1;}
   .nav-toggle{display:block;}
-  .nav-order-full{display:none;}
-  .nav-order-compact{display:block;}
   .nav-brand{font-size:1rem;gap:6px;}
   .nav-logo-img{width:40px;height:40px;}
   .nav-inner{padding:12px 14px;gap:8px;}
   .nav-right{gap:6px;}
-  .order-trigger-btn{padding:8px 10px;font-size:0.68rem;}
+  .order-trigger-btn{padding:8px 12px;font-size:0.68rem;}
   .lang-trigger-btn{padding:7px 8px;font-size:0.85rem;gap:3px;}
   .lang-trigger-btn .caret{display:none;}
   .nav-toggle{font-size:2rem;padding:2px 4px;}
-  .order-dropdown{right:0;left:auto;min-width:190px;}
 }
 
 /* ---------- HERO (photo cycler from master array) ---------- */
@@ -343,7 +362,7 @@ section{padding:100px 0;position:relative;}
 .menu{background:var(--ink);}
 .menu-board{
   background:var(--panel);
-  border:3px solid var(--teal-deep);
+  border:3px solid var(--brick-deep);
   border-radius:6px;
   padding:50px 44px;
   position:relative;
@@ -452,7 +471,7 @@ section{padding:100px 0;position:relative;}
   background:var(--panel);border:1px solid var(--line);border-radius:6px;
   padding:14px 16px;color:var(--chalk);font-family:inherit;font-size:0.95rem;resize:vertical;
 }
-.kontakt-input:focus{outline:none;border-color:var(--teal);}
+.kontakt-input:focus{outline:none;border-color:var(--red-hi);}
 .kontakt-msg{font-size:0.88rem;margin-top:4px;}
 .kontakt-msg.ok{color:#7fd8d3;}
 .kontakt-msg.err{color:#ffb3a0;}
@@ -507,7 +526,7 @@ section{padding:100px 0;position:relative;}
 }
 .std-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
 .std-card{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:34px;}
-.std-card h3{font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--teal);margin-bottom:18px;letter-spacing:0.5px;}
+.std-card h3{font-family:'Anton',sans-serif;font-size:1.3rem;color:var(--red-hi);margin-bottom:18px;letter-spacing:0.5px;}
 .std-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px dashed var(--line);font-size:0.94rem;}
 .std-row span:first-child{color:var(--muted);}
 .std-actions{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap;}
@@ -617,25 +636,13 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
       <a href="#story" data-i18n="navAbout">Über uns</a>
       <a href="#menu" data-i18n="navMenu">Speisekarte</a>
       <a href="#galerie" data-i18n="navGallery">Galerie</a>
-      <a href="#bestellen" data-i18n="navOrder">Bestellen</a>
+      <a href="#bestellen" id="navOrderLink" data-i18n="navOrder">Bestellen</a>
       <a href="#standort" data-i18n="navLocation">Standort</a>
       <a href="#kontakt" data-i18n="navContact">Kontakt</a>
       <a href="personal.html" class="staff-link" data-i18n="navStaff">Personal</a>
     </nav>
     <div class="nav-right">
-      <div class="nav-order-full">
-        <button class="dd-btn dd-lieferando" type="button" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin">Lieferando</button>
-        <button class="dd-btn dd-wolt" type="button" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D">Wolt</button>
-        <button class="dd-btn dd-uber" type="button" data-url="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ">Uber Eats</button>
-      </div>
-      <div class="order-trigger nav-order-compact">
-        <button class="order-trigger-btn" id="orderToggle" aria-expanded="false" type="button"><span data-i18n="navOrder">Bestellen</span> <span class="caret">▾</span></button>
-        <div class="order-dropdown" id="orderDropdown">
-          <button class="dd-btn dd-lieferando" type="button" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin">Lieferando</button>
-          <button class="dd-btn dd-wolt" type="button" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D">Wolt</button>
-          <button class="dd-btn dd-uber" type="button" data-url="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ">Uber Eats</button>
-        </div>
-      </div>
+      <button class="order-trigger-btn" id="orderModalOpen" type="button" data-i18n="navOrder">Bestellen</button>
       <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
     </div>
   </div>
@@ -807,6 +814,28 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
   <div class="staff-modal-inner">
     <button class="staff-modal-close" id="staffModalClose" type="button" aria-label="Schließen">&times;</button>
     <iframe id="staffModalFrame" src="" title="Personal-Bereich"></iframe>
+  </div>
+</div>
+
+<div class="order-modal-overlay" id="orderModalOverlay">
+  <div class="order-modal" role="dialog" aria-modal="true" aria-label="Bestellen">
+    <button class="order-modal-close" id="orderModalClose" type="button" aria-label="Schließen">&times;</button>
+    <div class="order-modal-tagline" data-i18n="orderModalTag">Dein Döner, dein Genuss!</div>
+    <h2 class="order-modal-title" data-i18n="orderModalTitle">Jetzt bestellen!</h2>
+    <div class="order-modal-list">
+      <a class="order-modal-item lieferando" href="https://www.lieferando.de/speisekarte/made-in-baerlin" data-url="https://www.lieferando.de/speisekarte/made-in-baerlin" target="_blank" rel="noopener">
+        <span class="order-modal-icon">🍽️</span>
+        <span class="order-modal-btn">Lieferando <span class="arrow">→</span></span>
+      </a>
+      <a class="order-modal-item wolt" href="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D" data-url="https://wolt.com/de/deu/osnabruck/restaurant/made-in-berlin-doener-osnabrueck?no_universal_links=true&srsltid=AfmBOor7VLJD9LajFD6_Sce9bh8p8NDSWsI3rcFljQ9PDlPzShMahC2D" target="_blank" rel="noopener">
+        <span class="order-modal-icon">🛵</span>
+        <span class="order-modal-btn">Wolt <span class="arrow">→</span></span>
+      </a>
+      <a class="order-modal-item uber" href="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ" data-url="https://www.ubereats.com/de/store/made-in-berlin-doner-osnabruck/8xn-Ye8_VZysfxWiAAgFqw?srsltid=AfmBOoqcn2Z6dmo3ZbdoBxidUNVOFSzANubX5y_g3wEMgvjwg5vzFolQ" target="_blank" rel="noopener">
+        <span class="order-modal-icon">🍔</span>
+        <span class="order-modal-btn">Uber Eats <span class="arrow">→</span></span>
+      </a>
+    </div>
   </div>
 </div>
 
@@ -1543,6 +1572,9 @@ const I18N = {
 
   storyTitle: { de:"Kreuzberg zieht um.", en:"Kreuzberg is moving in.", tr:"Kreuzberg taşınıyor.", ro:"Kreuzberg se mută." },
 
+  orderModalTag: { de:"Dein Döner, dein Genuss!", en:"Your döner, your pleasure!", tr:"Senin dönerin, senin keyfin!", ro:"Döner-ul tău, plăcerea ta!" },
+  orderModalTitle: { de:"Jetzt bestellen!", en:"Order now!", tr:"Şimdi sipariş ver!", ro:"Comandă acum!" },
+
   botHoursIntro: { de:"Unsere Öffnungszeiten:", en:"Our opening hours:", tr:"Çalışma saatlerimiz:", ro:"Programul nostru:" },
   botParking: {
     de:"Parkplätze gibt es ganz in der Nähe bei Galeria Kaufhof, nur ein paar Schritte entfernt.",
@@ -1694,22 +1726,27 @@ const I18N = {
   });
 })();
 
-// Order dropdown toggle
+// Bestellen modal (opens on nav link + nav trigger button; closes on X, overlay click, or Escape)
 (function(){
-  const btn = document.getElementById('orderToggle');
-  const dd = document.getElementById('orderDropdown');
-  btn.addEventListener('click', (e)=>{
-    e.stopPropagation();
-    const isOpen = dd.classList.toggle('open');
-    btn.classList.toggle('open', isOpen);
-    btn.setAttribute('aria-expanded', isOpen);
-  });
-  document.addEventListener('click', ()=>{
-    dd.classList.remove('open');
-    btn.classList.remove('open');
-    btn.setAttribute('aria-expanded', false);
-  });
-  dd.addEventListener('click', e=> e.stopPropagation());
+  const overlay = document.getElementById('orderModalOverlay');
+  const openBtn = document.getElementById('orderModalOpen');
+  const navLink = document.getElementById('navOrderLink');
+  const closeBtn = document.getElementById('orderModalClose');
+  if(!overlay) return;
+
+  function openModal(e){
+    if(e) e.preventDefault();
+    overlay.classList.add('open');
+  }
+  function closeModal(){
+    overlay.classList.remove('open');
+  }
+
+  if(openBtn) openBtn.addEventListener('click', openModal);
+  if(navLink) navLink.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+  document.addEventListener('keydown', (e) => { if(e.key === 'Escape') closeModal(); });
 })();
 
 // Lightweight stats tracking (feeds the separate personal.html staff dashboard via localStorage)
