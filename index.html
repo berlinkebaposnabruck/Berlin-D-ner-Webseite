@@ -98,34 +98,8 @@ header.nav{
 .nav-links{display:flex;gap:24px;font-size:0.82rem;text-transform:uppercase;letter-spacing:0.07em;font-weight:600;}
 .nav-links a{opacity:0.82;transition:opacity .2s, color .2s;position:relative;}
 .nav-links a:hover{opacity:1;color:var(--amber);}
-.nav-link-ico{display:none;}
-.nav-links-list{display:contents;}
-.nav-links-foot{display:none;}
-.nav-link-num{display:none;}
 .nav-right{display:flex;align-items:center;gap:10px;}
-.nav-toggle{
-  display:none;align-items:center;gap:9px;background:none;
-  border:2px solid transparent;border-radius:22px;cursor:pointer;padding:7px 10px;
-  transition:background .2s ease, border-color .2s ease;
-}
-.nav-toggle-bars{
-  display:flex;flex-direction:column;justify-content:center;gap:5px;width:24px;height:22px;flex-shrink:0;
-}
-.nav-toggle-bar{
-  display:block;width:100%;height:2.5px;background:var(--chalk);border-radius:2px;
-  transition:transform .28s cubic-bezier(.4,0,.2,1), opacity .2s ease, background .2s ease;
-  transform-origin:center;
-}
-.nav-toggle-label{
-  display:none;font-size:0.76rem;font-weight:800;text-transform:uppercase;
-  letter-spacing:0.05em;color:var(--chalk);white-space:nowrap;
-}
-.nav-toggle[aria-expanded="true"]{background:var(--red);border-color:var(--red);}
-.nav-toggle[aria-expanded="true"] .nav-toggle-label{display:inline;}
-.nav-toggle[aria-expanded="true"] .nav-toggle-bar{background:var(--chalk);}
-.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
-.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2){opacity:0;}
-.nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
+.nav-toggle{display:none;background:none;border:none;color:var(--chalk);font-size:2.2rem;cursor:pointer;line-height:1;padding:4px 6px;}
 .status-bar{
   display:flex;align-items:center;justify-content:center;gap:8px;
   padding:7px 14px;font-size:0.76rem;font-weight:700;letter-spacing:0.03em;
@@ -248,65 +222,14 @@ header.nav{
 .order-modal-item:hover .order-modal-btn .arrow{transform:translateX(4px);}
 @media (max-width:900px){
   .nav-links{
-    display:none;flex-direction:column;gap:0;
-    position:fixed;top:0;left:0;right:0;bottom:0;
-    padding-top:var(--header-h, 132px);
-    background:
-      radial-gradient(circle at 85% 8%, rgba(216,30,38,0.16), transparent 55%),
-      linear-gradient(165deg, var(--ink-2) 0%, var(--ink) 65%);
-    z-index:90;
-    overflow-y:auto;overflow-x:hidden;
+    display:flex;flex-direction:column;gap:0;
+    position:absolute;top:100%;left:0;right:0;
+    background:var(--ink-2);border-bottom:1px solid var(--line);
+    max-height:0;overflow:hidden;transition:max-height .3s ease;
   }
-  .nav-links.open{display:flex;}
-  .nav-links-list{
-    display:flex;flex-direction:column;padding:8px 28px 0;position:relative;z-index:1;
-  }
-  .nav-links a{
-    display:flex;align-items:baseline;gap:16px;
-    padding:17px 0;border-bottom:1px solid var(--line);
-    font-family:'Anton',sans-serif;text-transform:uppercase;
-    font-size:1.5rem;letter-spacing:0.3px;position:relative;
-    opacity:0;transform:translateX(-14px);
-  }
-  .nav-links.open a{animation:navLinkIn .38s cubic-bezier(.2,.8,.3,1) forwards;}
-  .nav-links.open a:nth-child(1){animation-delay:.04s;}
-  .nav-links.open a:nth-child(2){animation-delay:.09s;}
-  .nav-links.open a:nth-child(3){animation-delay:.14s;}
-  .nav-links.open a:nth-child(4){animation-delay:.19s;}
-  .nav-links.open a:nth-child(5){animation-delay:.24s;}
-  .nav-links.open a:nth-child(6){animation-delay:.29s;}
-  .nav-links.open a:nth-child(7){animation-delay:.34s;}
-  @keyframes navLinkIn{
-    from{ opacity:0; transform:translateX(-14px); }
-    to{ opacity:1; transform:translateX(0); }
-  }
-  .nav-link-num{
-    font-family:'Anton',sans-serif;font-size:0.95rem;color:var(--red-hi);
-    flex-shrink:0;width:26px;display:inline-block;
-  }
-  .nav-links a:after{
-    content:"";position:absolute;left:0;bottom:-1px;height:3px;width:0;
-    background:var(--red);transition:width .25s ease;
-  }
-  .nav-links a:active:after{width:100%;}
-  .nav-link-ico{display:none;}
-  .nav-links a.staff-link{
-    margin-top:22px;padding-top:16px;border-top:2px solid var(--line);border-bottom:none;
-    font-family:inherit;text-transform:none;font-weight:700;
-    font-size:0.8rem;letter-spacing:0.06em;color:var(--muted);opacity:0;
-  }
-  .nav-links a.staff-link .nav-link-ico{display:inline-block;font-size:1rem;}
-  .nav-links a.staff-link:after{display:none;}
-  .nav-links-foot{
-    margin-top:auto;padding:26px 28px 34px;position:relative;z-index:1;
-    display:flex;flex-direction:column;gap:6px;
-  }
-  .nav-links-foot a{
-    font-size:0.8rem;font-weight:700;letter-spacing:0.04em;color:var(--muted);
-    text-decoration:none;
-  }
-  .nav-links-foot a:hover{color:var(--red-hi);}
-  .nav-toggle{display:flex;}
+  .nav-links.open{max-height:360px;overflow-y:auto;}
+  .nav-links a{padding:16px 28px;border-bottom:1px solid var(--line);opacity:1;}
+  .nav-toggle{display:block;}
   .nav-brand{font-size:1rem;gap:6px;}
   .nav-logo-img{width:40px;height:40px;}
   .nav-inner{padding:12px 14px;gap:8px;}
@@ -721,29 +644,17 @@ footer{background:var(--ink-2);padding:50px 0 30px;border-top:1px solid var(--li
       </div>
     </div>
     <nav class="nav-links">
-      <div class="nav-links-list">
-        <a href="#story"><span class="nav-link-num">01</span><span data-i18n="navAbout">Über uns</span></a>
-        <a href="#menu"><span class="nav-link-num">02</span><span data-i18n="navMenu">Speisekarte</span></a>
-        <a href="#galerie"><span class="nav-link-num">03</span><span data-i18n="navGallery">Galerie</span></a>
-        <a href="#bestellen" id="navOrderLink"><span class="nav-link-num">04</span><span data-i18n="navOrder">Bestellen</span></a>
-        <a href="#standort"><span class="nav-link-num">05</span><span data-i18n="navLocation">Standort</span></a>
-        <a href="#kontakt"><span class="nav-link-num">06</span><span data-i18n="navContact">Kontakt</span></a>
-        <a href="personal.html" class="staff-link"><span class="nav-link-ico">🔒</span><span data-i18n="navStaff">Personal</span></a>
-      </div>
-      <div class="nav-links-foot">
-        <a href="https://www.instagram.com/berlindoener_os/" target="_blank" rel="noopener">📷 @berlindoener_os</a>
-      </div>
+      <a href="#story" data-i18n="navAbout">Über uns</a>
+      <a href="#menu" data-i18n="navMenu">Speisekarte</a>
+      <a href="#galerie" data-i18n="navGallery">Galerie</a>
+      <a href="#bestellen" id="navOrderLink" data-i18n="navOrder">Bestellen</a>
+      <a href="#standort" data-i18n="navLocation">Standort</a>
+      <a href="#kontakt" data-i18n="navContact">Kontakt</a>
+      <a href="personal.html" class="staff-link" data-i18n="navStaff">Personal</a>
     </nav>
     <div class="nav-right">
       <button class="order-trigger-btn" id="orderModalOpen" type="button" data-i18n="navOrder">Bestellen</button>
-      <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen" aria-expanded="false">
-        <span class="nav-toggle-bars">
-          <span class="nav-toggle-bar"></span>
-          <span class="nav-toggle-bar"></span>
-          <span class="nav-toggle-bar"></span>
-        </span>
-        <span class="nav-toggle-label" data-i18n="navClose">Schließen</span>
-      </button>
+      <button class="nav-toggle" id="navToggle" aria-label="Menü öffnen" aria-expanded="false">☰</button>
     </div>
   </div>
   <div id="statusBar" class="status-bar">
@@ -1604,47 +1515,18 @@ document.querySelectorAll('[data-url]').forEach(el=>{
 // Mobile nav toggle
 const navToggle = document.getElementById('navToggle');
 const navLinks = document.querySelector('.nav-links');
-
-// Keep the fullscreen mobile menu starting exactly below the header (which
-// can change height depending on the status bar / announcement banner).
-function updateHeaderHeightVar(){
-  const headerEl = document.querySelector('header.nav');
-  if(headerEl) document.documentElement.style.setProperty('--header-h', headerEl.offsetHeight + 'px');
-}
-updateHeaderHeightVar();
-window.addEventListener('resize', updateHeaderHeightVar);
-window.addEventListener('load', updateHeaderHeightVar);
-setTimeout(updateHeaderHeightVar, 500); // after announcement bar / fonts settle
-
 navToggle.addEventListener('click', ()=>{
-  updateHeaderHeightVar();
   const isOpen = navLinks.classList.toggle('open');
   navToggle.setAttribute('aria-expanded', isOpen);
-  document.body.style.overflow = isOpen ? 'hidden' : '';
+  navToggle.textContent = isOpen ? '✕' : '☰';
 });
 document.querySelectorAll('.nav-links a').forEach(a=>{
-  a.addEventListener('click', (e)=>{
-    const wasOpenMobileMenu = navLinks.classList.contains('open');
+  a.addEventListener('click', ()=>{
     navLinks.classList.remove('open');
-    navToggle.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-
-    const href = a.getAttribute('href') || '';
-    if(href.charAt(0) === '#'){
-      const el = document.querySelector(href);
-      if(el){
-        e.preventDefault();
-        // Wait for the fullscreen mobile menu to finish fading out before
-        // scrolling — otherwise the scroll and the closing overlay overlap
-        // and look like a glitch.
-        if(wasOpenMobileMenu) setTimeout(() => el.scrollIntoView({behavior:'smooth'}), 320);
-        else el.scrollIntoView({behavior:'smooth'});
-      }
-    }
+    navToggle.textContent = '☰';
   });
 });
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  if(a.closest('.nav-links')) return; // already handled above with proper close timing
   a.addEventListener('click', e=>{
     const id = a.getAttribute('href');
     const el = document.querySelector(id);
