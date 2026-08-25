@@ -43,15 +43,15 @@ body{
 /* ---------- LOGIN VIEW ---------- */
 .login-screen{
   min-height:calc(100vh - 70px);
-  display:flex;align-items:center;justify-content:center;
-  padding:40px 20px;
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:28px 20px;
 }
 .login-card{
   width:100%;max-width:400px;
   background:var(--panel);
   border:1px solid var(--line);
   border-radius:14px;
-  padding:44px 36px;
+  padding:40px 36px 32px;
   position:relative;
   box-shadow:0 30px 70px rgba(0,0,0,0.5);
 }
@@ -63,18 +63,18 @@ body{
   box-shadow:0 8px 20px rgba(225,75,50,0.5);
 }
 
-/* ---------- OTP-STYLE LOGIN ---------- */
+/* ---------- OTP-STYLE LOGIN (old branding text + new box mechanic) ---------- */
 .otp-eyebrow{
-  text-align:center;font-size:0.72rem;font-weight:800;letter-spacing:0.22em;
-  color:var(--muted);text-transform:uppercase;margin:16px 0 10px;
+  font-family:'Permanent Marker',cursive;color:var(--amber);
+  text-align:center;font-size:1rem;margin:14px 0 4px;transform:rotate(-2deg);
+  text-transform:none;letter-spacing:normal;font-weight:400;
 }
 .otp-title{
   font-family:'Anton',sans-serif;text-transform:uppercase;text-align:center;
-  font-size:1.7rem;margin:0 0 10px;letter-spacing:0.5px;
+  font-size:1.7rem;margin:0 0 20px;letter-spacing:0.5px;
 }
 .otp-sub{
-  text-align:center;color:var(--muted);font-size:0.85rem;line-height:1.5;
-  margin:0 0 28px;
+  display:none;
 }
 .otp-boxes{
   display:flex;justify-content:center;gap:8px;position:relative;cursor:text;
@@ -89,7 +89,7 @@ body{
 .otp-box.filled{
   border-color:#3ecf8e;background:rgba(62,207,142,0.08);
   box-shadow:0 0 0 3px rgba(62,207,142,0.12);
-  color:#7fe3b4;
+  color:#7fe3b4;font-weight:900;-webkit-text-stroke:1.5px #7fe3b4;
 }
 .otp-box.bounce{ animation:otpBounce .38s ease; }
 @keyframes otpBounce{
@@ -258,9 +258,8 @@ body{
 
 <div class="login-screen" id="loginScreen">
   <div class="login-card otp-card">
-    <div class="otp-eyebrow">Sicherheitscheck</div>
-    <h1 class="otp-title">Code eingeben</h1>
-    <p class="otp-sub">Gib deinen Zugangscode ein, um dich als Team-Mitglied anzumelden.</p>
+    <div class="otp-eyebrow">Nur für's Team</div>
+    <h1 class="otp-title">Personal-Login</h1>
     <div class="otp-boxes" id="otpBoxes"></div>
     <input type="tel" inputmode="numeric" id="passInput" class="otp-hidden-input" autocomplete="off" maxlength="20" aria-label="Zugangscode">
     <div class="otp-status" id="otpStatus">
