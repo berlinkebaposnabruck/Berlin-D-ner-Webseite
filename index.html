@@ -1630,13 +1630,28 @@ navToggle.addEventListener('click', ()=>{
   document.body.style.overflow = isOpen ? 'hidden' : '';
 });
 document.querySelectorAll('.nav-links a').forEach(a=>{
-  a.addEventListener('click', ()=>{
+  a.addEventListener('click', (e)=>{
+    const wasOpenMobileMenu = navLinks.classList.contains('open');
     navLinks.classList.remove('open');
     navToggle.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
+
+    const href = a.getAttribute('href') || '';
+    if(href.charAt(0) === '#'){
+      const el = document.querySelector(href);
+      if(el){
+        e.preventDefault();
+        // Wait for the fullscreen mobile menu to finish fading out before
+        // scrolling — otherwise the scroll and the closing overlay overlap
+        // and look like a glitch.
+        if(wasOpenMobileMenu) setTimeout(() => el.scrollIntoView({behavior:'smooth'}), 320);
+        else el.scrollIntoView({behavior:'smooth'});
+      }
+    }
   });
 });
 document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  if(a.closest('.nav-links')) return; // already handled above with proper close timing
   a.addEventListener('click', e=>{
     const id = a.getAttribute('href');
     const el = document.querySelector(id);
